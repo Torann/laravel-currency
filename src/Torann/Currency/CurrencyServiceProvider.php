@@ -35,7 +35,7 @@ class CurrencyServiceProvider extends ServiceProvider {
 		$this->registerCurrency();
 
 		// Register commands.
-		$this->registerCurrencyCronJob();
+		$this->registerCurrencyCommands();
 
 		//extend blade engine by adding @currency compile function
 		$this->app['view.engine.resolver']->resolve('blade')->getCompiler()->extend(function($view)
@@ -68,7 +68,7 @@ class CurrencyServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function registerCurrencyCronJob()
+	public function registerCurrencyCommands()
 	{
 		$this->app['currency.update'] = $this->app->share(function($app)
 		{
