@@ -65,7 +65,7 @@ class Currency {
 		}
 	}
 
-	public function format($number, $currency = null, $decimal_place_set = false)
+	public function format($number, $currency = null, $symbol_style = '%symbol%')
 	{
 		if ($currency && $this->hasCurrency($currency)) {
       		$symbol_left    = $this->currencies[$currency]['symbol_left'];
@@ -84,10 +84,6 @@ class Currency {
 			$currency = $this->code;
     	}
 
-    	if($decimal_place_set !== false && is_int($decimal_place_set)) {
-    		$decimal_place = $decimal_place_set;
-    	}
-
 		if ( $value = $this->currencies[$currency]['value'] ) {
       		$value = $number * $value;
     	}
@@ -98,13 +94,13 @@ class Currency {
     	$string = '';
 
 		if ( $symbol_left ) {
-      		$string .= $symbol_left;
+      		$string .= str_replace('%symbol%', $symbol_left, $symbol_style);
     	}
 
 		$string .= number_format(round($value, (int)$decimal_place), (int)$decimal_place, $decimal_point, $thousand_point);
 
     	if ( $symbol_right ) {
-      		$string .= $symbol_right;
+      		$string .= str_replace('%symbol%', $symbol_right, $symbol_style);
     	}
 
 		return $string;
