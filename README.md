@@ -13,7 +13,7 @@ This provides Laravel 4 with currency functions.
 To get the latest version of Currency simply require it in your `composer.json` file.
 
 ~~~
-"torann/laravel-currency": "dev-master"
+"torann/currency": "dev-master"
 ~~~
 
 You'll then need to run `composer install` to download it and have the autoloader updated.
