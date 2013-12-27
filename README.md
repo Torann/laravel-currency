@@ -1,6 +1,10 @@
-## Currency for Laravel 4 - Beta
+# Currency for Laravel 4 - Beta
+
+[![Latest Stable Version](https://poser.pugx.org/torann/currency/v/stable.png)](https://packagist.org/packages/torann/currency) [![Total Downloads](https://poser.pugx.org/torann/currency/downloads.png)](https://packagist.org/packages/torann/currency)
 
 This provides Laravel 4 with currency functions.
+
+----------
 
 ### Installation
 
