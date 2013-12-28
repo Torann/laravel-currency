@@ -44,6 +44,12 @@ Create configuration file using artisan
 $ php artisan config:publish torann/currency
 ~~~
 
+Generate the table by running
+
+~~~
+$ php artisan migrate --package=torann/currency
+~~~
+
 ### Updating exchange rate from Yahoo
 
 ~~~
