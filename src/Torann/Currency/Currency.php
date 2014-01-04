@@ -8,6 +8,13 @@ use Session;
 
 class Currency {
 
+    /**
+     * Laravel application
+     *
+     * @var Illuminate\Foundation\Application
+     */
+    public $app;
+
 	/**
 	 * Default currency
 	 *
@@ -25,31 +32,17 @@ class Currency {
 	/**
 	 * Create a new instance.
 	 *
-	 * @param  string   $default_currency
+	 * @param Illuminate\Foundation\Application $app
 	 * @return void
 	 */
-	public function __construct($default_currency = 'USD')
+	public function __construct($app)
 	{
-		$currencies = $this->getCurrencies();
+		$this->app = $app;
 
-		if($currencies)
-		{
-			foreach ($currencies as $result)
-			{
-				$this->currencies[$result->code] = array(
-					'id'            => $result->id,
-					'title'         => $result->title,
-					'symbol_left'   => $result->symbol_left,
-					'symbol_right'  => $result->symbol_right,
-					'decimal_place' => $result->decimal_place,
-					'value'         => $result->value,
-					'decimal_point' => $result->decimal_point,
-					'thousand_point'=> $result->thousand_point,
-					'code'			=> $result->code
-				);
-			}
-		}
+		// Initialize Currencies
+		$this->setCacheCurrencies();
 
+		// Check for a user defined currency
 		if(Input::get('currency') && array_key_exists(Input::get('currency'), $this->currencies))
 		{
 			$this->setCurrency(Input::get('currency'));
@@ -61,7 +54,7 @@ class Currency {
 			$this->setCurrency(Cookie::get('currency'));
 		}
 		else {
-			$this->setCurrency( $default_currency );
+			$this->setCurrency( $this->app['config']['currency::default'] );
 		}
 	}
 
@@ -150,11 +143,22 @@ class Currency {
 		}
 	}
 
+	/**
+	 * Return the current currency code
+	 *
+	 * @return string
+	 */
 	public function getCurrencyCode()
 	{
 		return $this->code;
 	}
 
+	/**
+	 * Return the current currency if the
+	 * one supplied is not valid.
+	 *
+	 * @return array
+	 */
 	public function getCurrency( $currency = '' )
 	{
 		if ($currency && $this->hasCurrency( $currency )) {
@@ -165,10 +169,31 @@ class Currency {
 		}
 	}
 
-	public function getCurrencies()
+	/**
+	 * Initialize Currencies.
+	 *
+	 * @return void
+	 */
+	public function setCacheCurrencies()
 	{
-		return Cache::rememberForever('torann.currency', function() {
-			return DB::table('currency')->get();
+		$this->currencies = Cache::rememberForever('torann.currency', function()
+		{
+			$cache = array();
+			foreach ($this->app['db']->table('currency')->get() as $currency)
+			{
+				$cache[$currency->code] = array(
+					'id'            => $currency->id,
+					'title'         => $currency->title,
+					'symbol_left'   => $currency->symbol_left,
+					'symbol_right'  => $currency->symbol_right,
+					'decimal_place' => $currency->decimal_place,
+					'value'         => $currency->value,
+					'decimal_point' => $currency->decimal_point,
+					'thousand_point'=> $currency->thousand_point,
+					'code'			=> $currency->code
+				);
+			}
+			return $cache;
 		});
 	}
 }

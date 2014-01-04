@@ -19,9 +19,6 @@ class CurrencyServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('torann/currency');
-
-		// Temp to use in closure.
-		$app = $this->app;
 	}
 
 	/**
@@ -46,7 +43,8 @@ class CurrencyServiceProvider extends ServiceProvider {
 
 		// Assign commands.
 		$this->commands(
-			'currency.update'
+			'currency.update',
+			'currency.cleanup'
 		);
 	}
 
@@ -59,7 +57,7 @@ class CurrencyServiceProvider extends ServiceProvider {
 	{
 		$this->app['currency'] = $this->app->share(function($app)
 		{
-			return new Currency( $app['config']['currency::default'] );
+			return new Currency( $app );
 		});
 	}
 
@@ -72,7 +70,12 @@ class CurrencyServiceProvider extends ServiceProvider {
 	{
 		$this->app['currency.update'] = $this->app->share(function($app)
 		{
-			return new Commands\CurrencyUpdateCommand( $app['currency'] );
+			return new Commands\CurrencyUpdateCommand( $app );
+		});
+
+		$this->app['currency.cleanup'] = $this->app->share(function($app)
+		{
+			return new Commands\CurrencyCleanupCommand();
 		});
 	}
 

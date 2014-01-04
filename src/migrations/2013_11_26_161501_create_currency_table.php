@@ -27,50 +27,49 @@ class CreateCurrencyTable extends Migration {
 			$table->timestamps();
 		});
 
-		// Insert presets
-		DB::table('currency')->insert(
+        $currencies = array(
 			array(
 				'id' => 1,
 				'title' => 'U.S. Dollar',
-				'symbol_left' => '$',
+				'symbol_left' => '$ ',
 				'symbol_right' => '',
 				'code' => 'USD',
 				'decimal_place' => 2,
 				'value' => 1.00000000,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 2,
 				'title' => 'Euro',
-				'symbol_left' => '&euro;',
+				'symbol_left' => ' ',
 				'symbol_right' => '',
 				'code' => 'EUR',
 				'decimal_place' => 2,
 				'value' => 0.74970001,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 3,
 				'title' => 'Pound Sterling',
-				'symbol_left' => '£',
+				'symbol_left' => '£ ',
 				'symbol_right' => '',
 				'code' => 'GBP',
 				'decimal_place' => 2,
 				'value' => 0.62220001,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 4,
 				'title' => 'Australian Dollar',
@@ -81,10 +80,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 0.94790000,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 5,
 				'title' => 'Canadian Dollar',
@@ -95,24 +94,24 @@ class CreateCurrencyTable extends Migration {
 				'value' => 0.98500001,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 6,
 				'title' => 'Czech Koruna',
-				'symbol_left' => 'K&#269;',
+				'symbol_left' => 'K?',
 				'symbol_right' => '',
 				'code' => 'CZK',
 				'decimal_place' => 2,
 				'value' => 19.16900063,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 7,
 				'title' => 'Danish Krone',
@@ -123,10 +122,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 5.59420013,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 8,
 				'title' => 'Hong Kong Dollar',
@@ -137,10 +136,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 7.75290012,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 9,
 				'title' => 'Hungarian Forint',
@@ -151,24 +150,24 @@ class CreateCurrencyTable extends Migration {
 				'value' => 221.27000427,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 10,
 				'title' => 'Israeli New Sheqel',
-				'symbol_left' => '&#8362;',
+				'symbol_left' => '?',
 				'symbol_right' => '',
 				'code' => 'ILS',
 				'decimal_place' => 2,
 				'value' => 3.73559999,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 11,
 				'title' => 'Japanese Yen',
@@ -179,10 +178,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 88.76499939,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 12,
 				'title' => 'Mexican Peso',
@@ -193,10 +192,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 12.63899994,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 13,
 				'title' => 'Norwegian Krone',
@@ -207,10 +206,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 5.52229977,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 14,
 				'title' => 'New Zealand Dollar',
@@ -221,10 +220,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 1.18970001,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 15,
 				'title' => 'Philippine Peso',
@@ -235,24 +234,24 @@ class CreateCurrencyTable extends Migration {
 				'value' => 40.58000183,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 16,
 				'title' => 'Polish Zloty',
-				'symbol_left' => 'z&#322;',
+				'symbol_left' => 'z?',
 				'symbol_right' => '',
 				'code' => 'PLN',
 				'decimal_place' => 2,
 				'value' => 3.08590007,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 17,
 				'title' => 'Singapore Dollar',
@@ -263,10 +262,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 1.22560000,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 18,
 				'title' => 'Swedish Krona',
@@ -277,10 +276,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 6.45870018,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 19,
 				'title' => 'Swiss Franc',
@@ -291,10 +290,10 @@ class CreateCurrencyTable extends Migration {
 				'value' => 0.92259997,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 20,
 				'title' => 'Taiwan New Dollar',
@@ -305,23 +304,27 @@ class CreateCurrencyTable extends Migration {
 				'value' => 28.95199966,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
-			)
-		);
-		DB::table('currency')->insert(
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
+			),
 			array(
 				'id' => 21,
 				'title' => 'Thai Baht',
-				'symbol_left' => '&#3647;',
+				'symbol_left' => '?',
 				'symbol_right' => '',
 				'code' => 'THB',
 				'decimal_place' => 2,
 				'value' => 30.09499931,
 				'decimal_point' => '.',
 				'thousand_point' => ',',
-				'status' => 1
+				'status' => 1,
+                'created_at' => '2013-11-29 19:51:38',
+                'updated_at' => '2013-11-29 19:51:38',
 			)
 		);
+
+		DB::table('currency')->insert( $currencies );
 	}
 
 	/**
