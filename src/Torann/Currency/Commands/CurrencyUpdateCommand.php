@@ -1,6 +1,7 @@
 <?php namespace Torann\Currency\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 use DB;
 use Cache;
@@ -22,20 +23,21 @@ class CurrencyUpdateCommand extends Command {
 	protected $description = 'Update exchange rates from Yahoo';
 
 	/**
-	 * Repository config.
+	 * Application instance
 	 *
-	 * @var Torann\Currency
+	 * @var Illuminate\Foundation\Application
 	 */
-	protected $currency;
+	protected $app;
 
 	/**
 	 * Create a new command instance.
 	 *
+	 * @param Illuminate\Foundation\Application $app
 	 * @return void
 	 */
-	public function __construct(\Torann\Currency\Currency $currency)
+	public function __construct($app)
 	{
-		$this->currency = $currency;
+		$this->app = $app;
 
 		parent::__construct();
 	}
@@ -47,36 +49,55 @@ class CurrencyUpdateCommand extends Command {
 	 */
 	public function fire()
 	{
+		// Get Settings
+		$defaultCurrency = $this->app['config']['currency::default'];
+
+        if ($this->input->getOption('openexchangerates'))
+        {
+        	if(  ! $api = $this->app['config']['currency::api_key'])
+        	{
+				$this->error('An API key is needed from OpenExchangeRates.org to continue.');
+				return;
+        	}
+
+        	// Get rates
+            $this->updateFromOpenExchangeRates( $defaultCurrency, $api );
+        }
+        else {
+        	// Get rates
+            $this->updateFromYahoo( $defaultCurrency );
+        }
+	}
+
+	private function updateFromYahoo( $defaultCurrency )
+	{
+		$this->info('Updating currency exchange rates from Finance Yahoo...');
+
 		$data = array();
 
 		// Get all currencies
-		$results = $this->currency->getCurrencies();
-		foreach($results AS $result) {
-			$data[] = $this->currency->getCurrencyCode() . $result->code . '=X';
+		foreach($this->app['db']->table('currency')->get() AS $currency)
+		{
+			$data[] = "{$defaultCurrency}{$currency->code}=X";
 		}
 
 		// Ask Yahoo for exchange rate
 		if( $data )
 		{
-			if (ini_get('allow_url_fopen')) {
-				$content = file_get_contents('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
-			}
-			else {
-				$content = $this->file_get_contents_curl('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
-			}
+			$content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
 
 			$lines = explode("\n", trim($content));
 
 			// Update each rate
 			foreach ($lines as $line)
 			{
-				$currency = substr($line, 4, 3);
+				$code = substr($line, 4, 3);
 				$value = substr($line, 11, 6);
 
 				if ($value)
 				{
-					DB::table('currency')
-						->where('code', $currency)
+					$this->app['db']->table('currency')
+						->where('code', $code)
 						->update(array(
 							'value' 		=> $value,
 							'updated_at'	=> new \DateTime('now'),
@@ -87,29 +108,69 @@ class CurrencyUpdateCommand extends Command {
 			Cache::forget('torann.currency');
 		}
 
-		$this->info('Currency exchange rates have been update.');
+		$this->info('Update!');
 	}
 
-	private function file_get_contents_curl($url)
+	private function updateFromOpenExchangeRates($defaultCurrency, $api)
 	{
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_HEADER, false);
+		$this->info('Updating currency exchange rates from OpenExchangeRates.org...');
 
-		if(!ini_get('safe_mode') && !ini_get('open_basedir'))
-		{
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		// Make request
+		$content = json_decode( $this->request("http://openexchangerates.org/api/latest.json?base={$defaultCurrency}&app_id={$api}") );
+
+		// Error getting content?
+		if( isset($content->error) ) {
+			$this->error($content->description);
+			return;
 		}
 
+		// Parse timestamp for DB
+		$timestamp = new \DateTime(strtotime($content->timestamp));
+
+		// Update each rate
+		foreach ($content->rates as $code=>$value)
+		{
+			$this->app['db']->table('currency')
+				->where('code', $code)
+				->update(array(
+					'value' 		=> $value,
+					'updated_at'	=> $timestamp
+			));
+		}
+
+		Cache::forget('torann.currency');
+
+		$this->info('Update!');
+	}
+
+	private function request( $url )
+	{
+		$ch = curl_init($url);
+
+		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 		curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
 		curl_setopt($ch, CURLOPT_HTTPGET, true);
-		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-		curl_setopt($ch, CURLOPT_MAXCONNECTS, 5);
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+		curl_setopt($ch, CURLOPT_MAXCONNECTS, 2);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-		$Rec_Data = curl_exec($ch);
+		$response = curl_exec($ch);
 		curl_close($ch);
-		return $Rec_Data;
+
+		return $response;
 	}
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return array(
+            array('openexchangerates', 'o', InputOption::VALUE_NONE, 'Get rates from OpenExchangeRates.org')
+        );
+    }
 }
