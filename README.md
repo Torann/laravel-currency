@@ -6,8 +6,9 @@ This provides Laravel 4 with currency functions.
 
 ----------
 
-### Installation
+## Installation
 
+- [Currency on Packagist](https://packagist.org/packages/torann/currency)
 - [Currency on GitHub](https://github.com/torann/laravel-currency)
 
 To get the latest version of Currency simply require it in your `composer.json` file.
@@ -50,13 +51,33 @@ Generate the table by running
 $ php artisan migrate --package=torann/currency
 ~~~
 
-### Updating exchange rate from Yahoo
+## Artisan Commands
+
+### Updating Exchange
+
+By default exchange rates are updated from Finance Yahoo.com.
 
 ~~~
 php artisan currency:update
 ~~~
 
-### Rendering
+To upate from OpenExchangeRates.org
+
+~~~
+php artisan currency:update --openexchangerates
+~~~
+
+ > Note: An API key is needed to use [OpenExchangeRates.org](http://OpenExchangeRates.org). Add yours to the config file.
+
+### Cleanup
+
+Used to clean the Laravel cached exchanged rates and refresh it from the database. Note that cached exchanged rates are cleared after they are updated using one of the command above.
+
+~~~
+php artisan currency:cleanup
+~~~
+
+## Rendering
 
 Using the Blade helper
 
@@ -70,3 +91,16 @@ Using the Blade helper
 ~~~php
 echo Currency::format(12.00, 'USD');
 ~~~
+
+## Change Log
+
+#### v0.1.1
+
+- Added support for OpenExchangeRates.org
+- Added a cleanup Artisan command
+- Refactored caching
+- Fixed bug in the commands
+
+#### v0.1.0
+
+- First release
