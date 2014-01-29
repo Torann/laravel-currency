@@ -58,7 +58,7 @@ class Currency {
 		}
 	}
 
-	public function format($number, $currency = null, $symbol_style = '%symbol%')
+	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false)
 	{
 		if ($currency && $this->hasCurrency($currency)) {
       		$symbol_left    = $this->currencies[$currency]['symbol_left'];
@@ -78,7 +78,16 @@ class Currency {
     	}
 
 		if ( $value = $this->currencies[$currency]['value'] ) {
-      		$value = $number * $value;
+      		
+      		if ( $inverse ) {
+
+                $value = $number * (1 / $value);
+
+            } else {
+
+                $value = $number * $value;
+            }
+      		
     	}
     	else {
       		$value = $number;
