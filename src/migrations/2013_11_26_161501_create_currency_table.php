@@ -45,7 +45,7 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 2,
 				'title' => 'Euro',
-				'symbol_left' => ' ',
+				'symbol_left' => '€ ',
 				'symbol_right' => '',
 				'code' => 'EUR',
 				'decimal_place' => 2,
@@ -241,8 +241,8 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 16,
 				'title' => 'Polish Zloty',
-				'symbol_left' => 'z?',
-				'symbol_right' => '',
+				'symbol_left' => '',
+				'symbol_right' => 'zł',
 				'code' => 'PLN',
 				'decimal_place' => 2,
 				'value' => 3.08590007,
