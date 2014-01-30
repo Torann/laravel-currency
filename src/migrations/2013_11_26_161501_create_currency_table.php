@@ -101,8 +101,8 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 6,
 				'title' => 'Czech Koruna',
-				'symbol_left' => 'K?',
-				'symbol_right' => '',
+				'symbol_left' => '',
+				'symbol_right' => 'Kč',
 				'code' => 'CZK',
 				'decimal_place' => 2,
 				'value' => 19.16900063,
