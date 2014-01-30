@@ -11,7 +11,7 @@ class Currency {
     /**
      * Laravel application
      *
-     * @var Illuminate\Foundation\Application
+     * @var \Illuminate\Foundation\Application
      */
     public $app;
 
@@ -32,7 +32,7 @@ class Currency {
 	/**
 	 * Create a new instance.
 	 *
-	 * @param Illuminate\Foundation\Application $app
+	 * @param \Illuminate\Foundation\Application $app
 	 * @return void
 	 */
 	public function __construct($app)
@@ -185,10 +185,12 @@ class Currency {
 	 */
 	public function setCacheCurrencies()
 	{
-		$this->currencies = Cache::rememberForever('torann.currency', function()
+		$db = $this->app['db'];
+		
+		$this->currencies = Cache::rememberForever('torann.currency', function() use ($db)
 		{
 			$cache = array();
-			foreach ($this->app['db']->table('currency')->get() as $currency)
+			foreach ($db->table('currency')->get() as $currency)
 			{
 				$cache[$currency->code] = array(
 					'id'            => $currency->id,
