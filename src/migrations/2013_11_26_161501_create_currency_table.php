@@ -31,7 +31,7 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 1,
 				'title' => 'U.S. Dollar',
-				'symbol_left' => '$ ',
+				'symbol_left' => '$',
 				'symbol_right' => '',
 				'code' => 'USD',
 				'decimal_place' => 2,
@@ -45,7 +45,7 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 2,
 				'title' => 'Euro',
-				'symbol_left' => '€ ',
+				'symbol_left' => '€',
 				'symbol_right' => '',
 				'code' => 'EUR',
 				'decimal_place' => 2,
@@ -59,7 +59,7 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 3,
 				'title' => 'Pound Sterling',
-				'symbol_left' => '£ ',
+				'symbol_left' => '£',
 				'symbol_right' => '',
 				'code' => 'GBP',
 				'decimal_place' => 2,
@@ -311,7 +311,7 @@ class CreateCurrencyTable extends Migration {
 			array(
 				'id' => 21,
 				'title' => 'Thai Baht',
-				'symbol_left' => '?',
+				'symbol_left' => '฿',
 				'symbol_right' => '',
 				'code' => 'THB',
 				'decimal_place' => 2,
