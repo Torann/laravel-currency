@@ -97,12 +97,18 @@ class Currency {
 
 		if ( $symbol_left ) {
       		$string .= str_replace('%symbol%', $symbol_left, $symbol_style);
+			if ($this->app['config']['currency::use_space']) {
+				$string .= ' ';
+			}
     	}
 
 		$string .= number_format(round($value, (int)$decimal_place), (int)$decimal_place, $decimal_point, $thousand_point);
 
     	if ( $symbol_right ) {
-      		$string .= str_replace('%symbol%', $symbol_right, $symbol_style);
+		    if ($this->app['config']['currency::use_space']) {
+			    $string .= ' ';
+		    }
+		    $string .= str_replace('%symbol%', $symbol_right, $symbol_style);
     	}
 
 		return $string;
