@@ -30,6 +30,13 @@ class CurrencyUpdateCommand extends Command {
 	protected $app;
 
 	/**
+	 * Currencies table name
+	 * 
+	 * @var string
+	 */
+	protected $table_name;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param Illuminate\Foundation\Application $app
@@ -37,7 +44,8 @@ class CurrencyUpdateCommand extends Command {
 	 */
 	public function __construct($app)
 	{
-		$this->app = $app;
+		$this->app        = $app;
+		$this->table_name = $app['config']['currency::table_name'];
 
 		parent::__construct();
 	}
@@ -76,7 +84,7 @@ class CurrencyUpdateCommand extends Command {
 		$data = array();
 
 		// Get all currencies
-		foreach($this->app['db']->table('currency')->get() AS $currency)
+		foreach($this->app['db']->table($this->table_name)->get() AS $currency)
 		{
 			$data[] = "{$defaultCurrency}{$currency->code}=X";
 		}
@@ -96,7 +104,7 @@ class CurrencyUpdateCommand extends Command {
 
 				if ($value)
 				{
-					$this->app['db']->table('currency')
+					$this->app['db']->table($this->table_name)
 						->where('code', $code)
 						->update(array(
 							'value' 		=> $value,
@@ -130,7 +138,7 @@ class CurrencyUpdateCommand extends Command {
 		// Update each rate
 		foreach ($content->rates as $code=>$value)
 		{
-			$this->app['db']->table('currency')
+			$this->app['db']->table($this->table_name)
 				->where('code', $code)
 				->update(array(
 					'value' 		=> $value,

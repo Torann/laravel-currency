@@ -195,8 +195,10 @@ class Currency {
 		
 		$this->currencies = Cache::rememberForever('torann.currency', function() use ($db)
 		{
-			$cache = array();
-			foreach ($db->table('currency')->get() as $currency)
+			$cache      = array();
+			$table_name = $this->app['config']['currency::table_name'];
+
+			foreach ($db->table($table_name)->get() as $currency)
 			{
 				$cache[$currency->code] = array(
 					'id'            => $currency->id,
