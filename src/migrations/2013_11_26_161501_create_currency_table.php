@@ -4,6 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateCurrencyTable extends Migration {
 
+	protected $table_name;
+
+	public function __construct()
+	{
+		$this->table_name = Config::get('currency::table_name');
+	}
+
 	/**
 	 * Run the migrations.
 	 *
@@ -11,8 +18,8 @@ class CreateCurrencyTable extends Migration {
 	 */
 	public function up()
 	{
-		// Create the `currency` table
-		Schema::create('currency', function($table)
+		// Create the currency table
+		Schema::create($this->table_name, function($table)
 		{
 			$table->increments('id')->unsigned();
 			$table->string('title', 255);
@@ -324,7 +331,7 @@ class CreateCurrencyTable extends Migration {
 			)
 		);
 
-		DB::table('currency')->insert( $currencies );
+		DB::table($this->table_name)->insert($currencies);
 	}
 
 	/**
@@ -334,8 +341,8 @@ class CreateCurrencyTable extends Migration {
 	 */
 	public function down()
 	{
-		// Delete the `currency` table
-		Schema::drop('currency');
+		// Delete the currency table
+		Schema::drop($this->table_name);
 	}
 
 }
