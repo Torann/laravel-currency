@@ -8,12 +8,12 @@ use Session;
 
 class Currency {
 
-    /**
-     * Laravel application
-     *
-     * @var \Illuminate\Foundation\Application
-     */
-    public $app;
+	/**
+	 * Laravel application
+	 *
+	 * @var \Illuminate\Foundation\Application
+	 */
+	public $app;
 
 	/**
 	 * Default currency
@@ -43,73 +43,83 @@ class Currency {
 		$this->setCacheCurrencies();
 
 		// Check for a user defined currency
-		if(Input::get('currency') && array_key_exists(Input::get('currency'), $this->currencies))
+		if (Input::get('currency') and array_key_exists(Input::get('currency'), $this->currencies))
 		{
 			$this->setCurrency(Input::get('currency'));
 		}
-		elseif (Session::get('currency') && array_key_exists(Session::get('currency'), $this->currencies)) {
+		elseif (Session::get('currency') and array_key_exists(Session::get('currency'), $this->currencies))
+		{
 			$this->setCurrency(Session::get('currency'));
 		}
-		elseif(Cookie::get('currency') && array_key_exists(Cookie::get('currency'), $this->currencies)) {
+		elseif (Cookie::get('currency') and array_key_exists(Cookie::get('currency'), $this->currencies))
+		{
 			$this->setCurrency(Cookie::get('currency'));
 		}
-		else {
-			$this->setCurrency( $this->app['config']['currency::default'] );
+		else
+		{
+			$this->setCurrency($this->app['config']['currency::default']);
 		}
 	}
 
 	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false)
 	{
-		if ($currency && $this->hasCurrency($currency)) {
-      		$symbol_left    = $this->currencies[$currency]['symbol_left'];
-      		$symbol_right   = $this->currencies[$currency]['symbol_right'];
-      		$decimal_place  = $this->currencies[$currency]['decimal_place'];
-      		$decimal_point  = $this->currencies[$currency]['decimal_point'];
-      		$thousand_point = $this->currencies[$currency]['thousand_point'];
-    	}
-    	else {
-      		$symbol_left    = $this->currencies[$this->code]['symbol_left'];
-      		$symbol_right   = $this->currencies[$this->code]['symbol_right'];
-      		$decimal_place  = $this->currencies[$this->code]['decimal_place'];
-      		$decimal_point  = $this->currencies[$this->code]['decimal_point'];
-      		$thousand_point = $this->currencies[$this->code]['thousand_point'];
+		if ($currency and $this->hasCurrency($currency))
+		{
+			$symbol_left    = $this->currencies[$currency]['symbol_left'];
+			$symbol_right   = $this->currencies[$currency]['symbol_right'];
+			$decimal_place  = $this->currencies[$currency]['decimal_place'];
+			$decimal_point  = $this->currencies[$currency]['decimal_point'];
+			$thousand_point = $this->currencies[$currency]['thousand_point'];
+		}
+		else {
+			$symbol_left    = $this->currencies[$this->code]['symbol_left'];
+			$symbol_right   = $this->currencies[$this->code]['symbol_right'];
+			$decimal_place  = $this->currencies[$this->code]['decimal_place'];
+			$decimal_point  = $this->currencies[$this->code]['decimal_point'];
+			$thousand_point = $this->currencies[$this->code]['thousand_point'];
 
 			$currency = $this->code;
-    	}
+		}
 
-		if ( $value = $this->currencies[$currency]['value'] ) {
-      		
-      		if ( $inverse ) {
+		if ($value = $this->currencies[$currency]['value'])
+		{
+			if ($inverse)
+			{
+				$value = $number * (1 / $value);
+			}
+			else
+			{
+				$value = $number * $value;
+			}
+		}
+		else
+		{
+			$value = $number;
+		}
 
-                $value = $number * (1 / $value);
+		$string = '';
 
-            } else {
+		if ($symbol_left)
+		{
+			$string .= str_replace('%symbol%', $symbol_left, $symbol_style);
 
-                $value = $number * $value;
-            }
-      		
-    	}
-    	else {
-      		$value = $number;
-    	}
-
-    	$string = '';
-
-		if ( $symbol_left ) {
-      		$string .= str_replace('%symbol%', $symbol_left, $symbol_style);
-			if ($this->app['config']['currency::use_space']) {
+			if ($this->app['config']['currency::use_space'])
+			{
 				$string .= ' ';
 			}
-    	}
+		}
 
-		$string .= number_format(round($value, (int)$decimal_place), (int)$decimal_place, $decimal_point, $thousand_point);
+		$string .= number_format(round($value, (int) $decimal_place), (int) $decimal_place, $decimal_point, $thousand_point);
 
-    	if ( $symbol_right ) {
-		    if ($this->app['config']['currency::use_space']) {
-			    $string .= ' ';
-		    }
-		    $string .= str_replace('%symbol%', $symbol_right, $symbol_style);
-    	}
+		if ($symbol_right)
+		{
+			if ($this->app['config']['currency::use_space'])
+			{
+				$string .= ' ';
+			}
+
+			$string .= str_replace('%symbol%', $symbol_right, $symbol_style);
+		}
 
 		return $string;
 	}
@@ -118,23 +128,28 @@ class Currency {
 	{
 		$value = $this->currencies[$this->code]['value'];
 
-		if ($value) {
-      		$value = $number * $value;
-    	}
-    	else {
-      		$value = $number;
-    	}
+		if ($value)
+		{
+			$value = $number * $value;
+		}
+		else
+		{
+			$value = $number;
+		}
 
-    	if( ! $dec ) {
-    		$dec = $this->currencies[$this->code]['decimal_place'];
-    	}
-		return number_format(round($value, (int)$dec), (int)$dec, '.', '');
+		if ( ! $dec)
+		{
+			$dec = $this->currencies[$this->code]['decimal_place'];
+		}
+
+		return number_format(round($value, (int) $dec), (int) $dec, '.', '');
 	}
 
 	public function getCurrencySymbol($right = false)
 	{
-		if($right) {
-			$this->currencies[$this->code]['symbol_right'];
+		if ($right)
+		{
+			return $this->currencies[$this->code]['symbol_right'];
 		}
 
 		return $this->currencies[$this->code]['symbol_left'];
@@ -142,18 +157,20 @@ class Currency {
 
 	public function hasCurrency($currency)
 	{
-    	return isset($this->currencies[$currency]);
-  	}
+		return isset($this->currencies[$currency]);
+	}
 
 	public function setCurrency($currency)
 	{
 		$this->code = $currency;
 
-		if(Session::get('currency') != $currency) {
+		if (Session::get('currency') != $currency)
+		{
 			Session::set('currency', $currency);
 		}
 
-		if(Cookie::get('currency') != $currency) {
+		if (Cookie::get('currency') != $currency)
+		{
 			Cookie::make('currency', $currency, time() + 60 * 60 * 24 * 30);
 		}
 	}
@@ -174,12 +191,14 @@ class Currency {
 	 *
 	 * @return array
 	 */
-	public function getCurrency( $currency = '' )
+	public function getCurrency($currency = '')
 	{
-		if ($currency && $this->hasCurrency( $currency )) {
-      		return $this->currencies[$currency];
+		if ($currency and $this->hasCurrency($currency))
+		{
+			return $this->currencies[$currency];
 		}
-		else {
+		else
+		{
 			return $this->currencies[$this->code];
 		}
 	}
@@ -192,7 +211,7 @@ class Currency {
 	public function setCacheCurrencies()
 	{
 		$db = $this->app['db'];
-		
+
 		$this->currencies = Cache::rememberForever('torann.currency', function() use ($db)
 		{
 			$cache      = array();
@@ -201,15 +220,15 @@ class Currency {
 			foreach ($db->table($table_name)->get() as $currency)
 			{
 				$cache[$currency->code] = array(
-					'id'            => $currency->id,
-					'title'         => $currency->title,
-					'symbol_left'   => $currency->symbol_left,
-					'symbol_right'  => $currency->symbol_right,
-					'decimal_place' => $currency->decimal_place,
-					'value'         => $currency->value,
-					'decimal_point' => $currency->decimal_point,
-					'thousand_point'=> $currency->thousand_point,
-					'code'			=> $currency->code
+					'id'             => $currency->id,
+					'title'          => $currency->title,
+					'symbol_left'    => $currency->symbol_left,
+					'symbol_right'   => $currency->symbol_right,
+					'decimal_place'  => $currency->decimal_place,
+					'value'          => $currency->value,
+					'decimal_point'  => $currency->decimal_point,
+					'thousand_point' => $currency->thousand_point,
+					'code'           => $currency->code
 				);
 			}
 			return $cache;
