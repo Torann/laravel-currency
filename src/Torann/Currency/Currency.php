@@ -58,7 +58,7 @@ class Currency {
 		}
 	}
 
-	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false)
+	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false, $rounding_type = '', $precision = null)
 	{
 		if ($currency && $this->hasCurrency($currency)) {
       		$symbol_left    = $this->currencies[$currency]['symbol_left'];
@@ -102,7 +102,28 @@ class Currency {
 			}
     	}
 
-		$string .= number_format(round($value, (int)$decimal_place), (int)$decimal_place, $decimal_point, $thousand_point);
+		switch ($rounding_type){
+			case 'ceil':
+			case 'ceiling':
+				if ($precision != null)
+					$multiplier = pow(10, -(int)$precision);
+				else
+					$multiplier = pow(10, -(int)$decimal_place);
+				$string .= number_format(ceil($value / $multiplier) * $multiplier, (int)$decimal_place, $decimal_point, $thousand_point);
+				break;
+			case 'floor':
+				if ($precision != null)
+					$multiplier = pow(10, -(int)$precision);
+				else
+					$multiplier = pow(10, -(int)$decimal_place);
+				$string .= number_format(floor($value / $multiplier) * $multiplier, (int)$decimal_place, $decimal_point, $thousand_point);
+				break;
+			default:
+				if ($precision == null)
+					$precision = (int)$decimal_place;
+				$string .= number_format(round($value, (int)$precision), (int)$decimal_place, $decimal_point, $thousand_point);
+				break;
+		}
 
     	if ( $symbol_right ) {
 		    if ($this->app['config']['currency::use_space']) {
