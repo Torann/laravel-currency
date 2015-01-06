@@ -43,15 +43,15 @@ class Currency {
 		$this->setCacheCurrencies();
 
 		// Check for a user defined currency
-		if (Input::get('currency') and array_key_exists(Input::get('currency'), $this->currencies))
+		if (Input::get('currency') && array_key_exists(Input::get('currency'), $this->currencies))
 		{
 			$this->setCurrency(Input::get('currency'));
 		}
-		elseif (Session::get('currency') and array_key_exists(Session::get('currency'), $this->currencies))
+		elseif (Session::get('currency') && array_key_exists(Session::get('currency'), $this->currencies))
 		{
 			$this->setCurrency(Session::get('currency'));
 		}
-		elseif (Cookie::get('currency') and array_key_exists(Cookie::get('currency'), $this->currencies))
+		elseif (Cookie::get('currency') && array_key_exists(Cookie::get('currency'), $this->currencies))
 		{
 			$this->setCurrency(Cookie::get('currency'));
 		}
@@ -61,9 +61,9 @@ class Currency {
 		}
 	}
 
-	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false)
+	public function format($number, $currency = null, $symbol_style = '%symbol%', $inverse = false, $rounding_type = '', $precision = null)
 	{
-		if ($currency and $this->hasCurrency($currency))
+		if ($currency && $this->hasCurrency($currency))
 		{
 			$symbol_left    = $this->currencies[$currency]['symbol_left'];
 			$symbol_right   = $this->currencies[$currency]['symbol_right'];
@@ -71,7 +71,8 @@ class Currency {
 			$decimal_point  = $this->currencies[$currency]['decimal_point'];
 			$thousand_point = $this->currencies[$currency]['thousand_point'];
 		}
-		else {
+		else
+		{
 			$symbol_left    = $this->currencies[$this->code]['symbol_left'];
 			$symbol_right   = $this->currencies[$this->code]['symbol_right'];
 			$decimal_place  = $this->currencies[$this->code]['decimal_place'];
@@ -109,7 +110,44 @@ class Currency {
 			}
 		}
 
-		$string .= number_format(round($value, (int) $decimal_place), (int) $decimal_place, $decimal_point, $thousand_point);
+		switch ($rounding_type)
+		{
+			case 'ceil':
+			case 'ceiling':
+				if ($precision != null)
+				{
+					$multiplier = pow(10, -(int) $precision);
+				}
+				else
+				{
+					$multiplier = pow(10, -(int) $decimal_place);
+				}
+
+				$string .= number_format(ceil($value / $multiplier) * $multiplier, (int) $decimal_place, $decimal_point, $thousand_point);
+				break;
+
+			case 'floor':
+				if ($precision != null)
+				{
+					$multiplier = pow(10, -(int) $precision);
+				}
+				else
+				{
+					$multiplier = pow(10, -(int) $decimal_place);
+				}
+
+				$string .= number_format(floor($value / $multiplier) * $multiplier, (int) $decimal_place, $decimal_point, $thousand_point);
+				break;
+
+			default:
+				if ($precision == null)
+				{
+					$precision = (int) $decimal_place;
+				}
+
+				$string .= number_format(round($value, (int) $precision), (int) $decimal_place, $decimal_point, $thousand_point);
+				break;
+		}
 
 		if ($symbol_right)
 		{
@@ -193,7 +231,7 @@ class Currency {
 	 */
 	public function getCurrency($currency = '')
 	{
-		if ($currency and $this->hasCurrency($currency))
+		if ($currency && $this->hasCurrency($currency))
 		{
 			return $this->currencies[$currency];
 		}
@@ -212,7 +250,7 @@ class Currency {
 	{
 		$db = $this->app['db'];
 
-		$this->currencies = Cache::rememberForever('torann.currency', function() use ($db)
+		$this->currencies = Cache::rememberForever('torann.currency', function() use($db)
 		{
 			$cache      = array();
 			$table_name = $this->app['config']['currency::table_name'];
@@ -228,9 +266,10 @@ class Currency {
 					'value'          => $currency->value,
 					'decimal_point'  => $currency->decimal_point,
 					'thousand_point' => $currency->thousand_point,
-					'code'           => $currency->code
+					'code'           => $currency->code,
 				);
 			}
+
 			return $cache;
 		});
 	}
