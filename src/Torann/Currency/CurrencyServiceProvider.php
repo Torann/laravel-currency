@@ -57,7 +57,7 @@ class CurrencyServiceProvider extends ServiceProvider {
 	{
 		$this->app['currency'] = $this->app->share(function($app)
 		{
-			return new Currency( $app );
+			return new Currency($app);
 		});
 	}
 
@@ -70,7 +70,7 @@ class CurrencyServiceProvider extends ServiceProvider {
 	{
 		$this->app['currency.update'] = $this->app->share(function($app)
 		{
-			return new Commands\CurrencyUpdateCommand( $app );
+			return new Commands\CurrencyUpdateCommand($app);
 		});
 
 		$this->app['currency.cleanup'] = $this->app->share(function($app)

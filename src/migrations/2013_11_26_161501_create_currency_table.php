@@ -34,7 +34,7 @@ class CreateCurrencyTable extends Migration {
 			$table->timestamps();
 		});
 
-        $currencies = array(
+		$currencies = array(
 			array(
 				'id' => 1,
 				'title' => 'U.S. Dollar',
@@ -46,8 +46,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 2,
@@ -60,8 +60,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 3,
@@ -74,8 +74,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 4,
@@ -88,8 +88,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 5,
@@ -102,8 +102,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 6,
@@ -116,8 +116,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 7,
@@ -130,8 +130,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 8,
@@ -144,8 +144,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 9,
@@ -158,8 +158,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 10,
@@ -172,8 +172,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 11,
@@ -186,8 +186,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 12,
@@ -200,8 +200,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 13,
@@ -214,8 +214,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 14,
@@ -228,8 +228,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 15,
@@ -242,8 +242,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 16,
@@ -256,8 +256,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 17,
@@ -270,8 +270,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 18,
@@ -284,8 +284,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 19,
@@ -298,8 +298,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 20,
@@ -312,8 +312,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			),
 			array(
 				'id' => 21,
@@ -326,8 +326,8 @@ class CreateCurrencyTable extends Migration {
 				'decimal_point' => '.',
 				'thousand_point' => ',',
 				'status' => 1,
-                'created_at' => '2013-11-29 19:51:38',
-                'updated_at' => '2013-11-29 19:51:38',
+				'created_at' => '2013-11-29 19:51:38',
+				'updated_at' => '2013-11-29 19:51:38',
 			)
 		);
 
