@@ -88,7 +88,7 @@ class CurrencyUpdateCommand extends Command
             // Update each rate
             foreach ($lines as $line) {
                 $code = substr($line, 4, 3);
-                $value = substr($line, 11, 6);
+                $value = substr($line, 11, 6) * 1.00;
 
                 if ($value) {
                     $this->currency->getDriver()->update($code, $value);
