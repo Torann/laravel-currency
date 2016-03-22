@@ -14,24 +14,24 @@ class Currency
      *
      * @var array
      */
-    public $config = [];
+    protected $config = [];
 
     /**
      * Laravel application
      *
      * @var \Illuminate\Contracts\Cache\Factory
      */
-    public $cache;
+    protected $cache;
 
     /**
      * Session manager instance.
      *
      * @var \Illuminate\Session\SessionManager
      */
-    public $session;
+    protected $session;
 
     /**
-     * Default currency
+     * User's currency
      *
      * @var string
      */
@@ -65,8 +65,8 @@ class Currency
         $this->cache = $cache;
         $this->session = $session;
 
-        // Initialize Currencies
-        $this->setCacheCurrencies();
+        // Initialize currencies and cache them
+        $this->getCacheCurrencies();
 
         // Check for a user defined currency
         if ($request->get('currency') && $this->hasCurrency($request->get('currency'))) {
@@ -187,14 +187,9 @@ class Currency
     {
         $value = $this->currencies[$this->code]['value'];
 
-        if ($value) {
-            $value = $number * $value;
-        }
-        else {
-            $value = $number;
-        }
+        $value = $value ? ($number * $value) : $number;
 
-        if (!$dec) {
+        if ($dec === false) {
             $dec = $this->currencies[$this->code]['decimal_place'];
         }
 
@@ -202,7 +197,7 @@ class Currency
     }
 
     /**
-     * Get currency number.
+     * Get currency symbol.
      *
      * @param bool $right
      *
@@ -220,31 +215,31 @@ class Currency
     /**
      * Determine if given currency exists.
      *
-     * @param string $currency
+     * @param string $code
      *
      * @return bool
      */
-    public function hasCurrency($currency)
+    public function hasCurrency($code)
     {
-        return array_key_exists($currency, $this->currencies);
+        return array_key_exists($code, $this->currencies);
     }
 
     /**
-     * Set currency.
+     * Set user's currency.
      *
-     * @param string $currency
+     * @param string $code
      */
-    public function setCurrency($currency)
+    public function setCurrency($code)
     {
-        $this->code = $currency;
+        $this->code = $code;
 
         if ($this->session) {
-            $this->session->set('currency', $currency);
+            $this->session->set('currency', $code);
         }
     }
 
     /**
-     * Return the current currency code
+     * Return the user's currency code.
      *
      * @return string
      */
@@ -257,14 +252,14 @@ class Currency
      * Return the current currency if the
      * one supplied is not valid.
      *
-     * @param string $currency
+     * @param string $code
      *
      * @return array
      */
-    public function getCurrency($currency = '')
+    public function getCurrency($code = null)
     {
-        if ($currency && $this->hasCurrency($currency)) {
-            return $this->currencies[$currency];
+        if ($code && $this->hasCurrency($code)) {
+            return $this->currencies[$code];
         }
         else {
             return $this->currencies[$this->code];
@@ -293,22 +288,6 @@ class Currency
     }
 
     /**
-     * Set cached currencies.
-     *
-     * @return array
-     */
-    public function setCacheCurrencies()
-    {
-        if (config('app.debug', false) === true) {
-            return $this->currencies = $this->getDriver()->all();
-        }
-
-        return $this->currencies = $this->cache->rememberForever('torann.currency', function () {
-            return $this->getDriver()->all();
-        });
-    }
-
-    /**
      * Clear cached currencies.
      */
     public function clearCache()
@@ -327,5 +306,33 @@ class Currency
     public function getConfig($key, $default = null)
     {
         return Arr::get($this->config, $key, $default);
+    }
+
+    /**
+     * Get cached currencies.
+     *
+     * @return array
+     */
+    public function getCacheCurrencies()
+    {
+        if (config('app.debug', false) === true) {
+            return $this->currencies = $this->getDriver()->all();
+        }
+
+        return $this->currencies = $this->cache->rememberForever('torann.currency', function () {
+            return $this->getDriver()->all();
+        });
+    }
+
+    /**
+     * Dynamically call the default driver instance.
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this->getDriver(), $method], $parameters);
     }
 }

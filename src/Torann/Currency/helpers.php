@@ -12,7 +12,7 @@ if (! function_exists('currency')) {
      * @param null   $precision
      * @param null   $decimalPlace
      *
-     * @return string
+     * @return \Torann\Currency\Currency|string
      */
     function currency($number = null, $currency = null, $symbolStyle = '%symbol%', $inverse = false, $roundingType = '', $precision = null, $decimalPlace = null)
     {
