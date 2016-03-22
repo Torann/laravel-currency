@@ -1,92 +1,97 @@
-<?php namespace Torann\Currency;
+<?php
+
+namespace Torann\Currency;
 
 use Illuminate\Support\ServiceProvider;
 
-class CurrencyServiceProvider extends ServiceProvider {
+class CurrencyServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        if ($this->isLumen() === false) {
+            $this->publishes([
+                __DIR__ . '/../../config/currency.php' => config_path('currency.php'),
+            ]);
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+            $this->mergeConfigFrom(
+                __DIR__ . '/../../config/currency.php', 'currency'
+            );
+        }
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-		$this->package('torann/currency');
-	}
+        $this->publishes([
+            __DIR__.'/../../migrations' => base_path('/database/migrations'),
+        ], 'migrations');
+    }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		// Register providers.
-		$this->registerCurrency();
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->registerCurrency();
+        $this->registerCurrencyCommands();
+    }
 
-		// Register commands.
-		$this->registerCurrencyCommands();
+    /**
+     * Register currency provider.
+     *
+     * @return void
+     */
+    public function registerCurrency()
+    {
+        $this->app->bind('currency', function ($app) {
+            $config = $app->config->get('currency', []);
+            return new Currency($config, $app['cache'], $app['session'], $app['request']);
+        });
+    }
 
-		//extend blade engine by adding @currency compile function
-		$this->app['view.engine.resolver']->resolve('blade')->getCompiler()->extend(function($view)
-		{
-			$html = "$1<?php echo Currency::format$2; ?>";
-			return preg_replace("/(?<!\w)(\s*)@currency(\s*\(.*\))/", $html, $view);
-		});
+    /**
+     * Register generator of Currency.
+     *
+     * @return void
+     */
+    public function registerCurrencyCommands()
+    {
+        $this->app['currency.update'] = $this->app->share(function ($app) {
+            return new Commands\CurrencyUpdateCommand($app['currency']);
+        });
 
-		// Assign commands.
-		$this->commands(
-			'currency.update',
-			'currency.cleanup'
-		);
-	}
+        $this->app['currency.cleanup'] = $this->app->share(function ($app) {
+            return new Commands\CurrencyCleanupCommand($app['currency']);
+        });
 
-	/**
-	 * Register currency provider.
-	 *
-	 * @return void
-	 */
-	public function registerCurrency()
-	{
-		$this->app['currency'] = $this->app->share(function($app)
-		{
-			return new Currency($app);
-		});
-	}
+        $this->commands(
+            'currency.update',
+            'currency.cleanup'
+        );
+    }
 
-	/**
-	 * Register generator of Currency.
-	 *
-	 * @return void
-	 */
-	public function registerCurrencyCommands()
-	{
-		$this->app['currency.update'] = $this->app->share(function($app)
-		{
-			return new Commands\CurrencyUpdateCommand($app);
-		});
+    /**
+     * Check if package is running under Lumen app
+     *
+     * @return bool
+     */
+    protected function isLumen()
+    {
+        return str_contains($this->app->version(), 'Lumen') === true;
+    }
 
-		$this->app['currency.cleanup'] = $this->app->share(function($app)
-		{
-			return new Commands\CurrencyCleanupCommand();
-		});
-	}
-
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('currency');
-	}
-
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'currency',
+        ];
+    }
 }

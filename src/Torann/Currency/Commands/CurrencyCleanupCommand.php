@@ -1,51 +1,54 @@
-<?php namespace Torann\Currency\Commands;
+<?php
 
+namespace Torann\Currency\Commands;
+
+use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
-use Cache;
+class CurrencyCleanupCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'currency:cleanup';
 
-class CurrencyCleanupCommand extends Command {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Cleanup currency cache';
 
-	/**
-	 * The console command name.
-	 *
-	 * @var string
-	 */
-	protected $name = 'currency:cleanup';
+    /**
+     * Currency instance
+     *
+     * @var \Torann\Currency\Currency
+     */
+    protected $currency;
 
-	/**
-	 * The console command description.
-	 *
-	 * @var string
-	 */
-	protected $description = 'Cleanup currency cache';
+    /**
+     * Create a new command instance.
+     *
+     * @param Currency $currency
+     */
+    public function __construct(Currency $currency)
+    {
+        $this->currency = $currency;
 
-	/**
-	 * Application instance
-	 *
-	 * @var Illuminate\Foundation\Application
-	 */
-	protected $app;
+        parent::__construct();
+    }
 
-	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function fire()
+    {
+        $this->currency->clearCache();
 
-	/**
-	 * Execute the console command.
-	 *
-	 * @return void
-	 */
-	public function fire()
-	{
-		Cache::forget('torann.currency');
-
-		$this->info('Currency cache cleaned.');
-	}
+        $this->info('Currency cache cleaned.');
+    }
 }
