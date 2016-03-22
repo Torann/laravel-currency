@@ -13,9 +13,14 @@ Documentation for the package can be found on [Lyften.com](http://lyften.com/pro
 
 ## Laravel 4
 
-For Laravel 4 Installation see [version 0.1.3](https://github.com/Torann/laravel-currency/tree/0.1.3);
+For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-currency/tree/0.1);
 
 ## Change Log
+
+#### v0.2.1
+
+- Force conversion to number [Bug 25](https://github.com/Torann/laravel-currency/issues/25)
+- Made it easier to use the drivers
 
 #### v0.2.0
 
