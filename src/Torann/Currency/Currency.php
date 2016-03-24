@@ -108,16 +108,15 @@ class Currency
 
         $decimalPoint = $this->currencies[$currency]['decimal_point'];
         $thousandPoint = $this->currencies[$currency]['thousand_point'];
-
-        if ($value = $this->currencies[$currency]['value']) {
+        
+        if ($currency != $this->getCurrencyCode()) {
+            $value = $this->currencies[$currency]['value'];
             if ($inverse) {
                 $value = $number * (1 / $value);
-            }
-            else {
+            } else {
                 $value = $number * $value;
             }
-        }
-        else {
+        } else {
             $value = $number;
         }
 
