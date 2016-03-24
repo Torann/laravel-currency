@@ -81,22 +81,23 @@ class Currency {
 
 			$currency = $this->code;
 		}
-
-		if ($value = $this->currencies[$currency]['value'])
-		{
-			if ($inverse)
-			{
-				$value = $number * (1 / $value);
-			}
-			else
-			{
-				$value = $number * $value;
-			}
-		}
-		else
-		{
-			$value = $number;
-		}
+		
+	        if ($currency != $this->code) 
+	        {
+                	$value = $this->currencies[$currency]['value'];
+                	if ($inverse) 
+                	{
+                		$value = $number * (1 / $value);
+            		} 
+            		else 
+            		{
+                		$value = $number * $value;
+            		}
+	        } 
+	        else 
+	        {
+	            	$value = $number;
+	        }
 
 		$string = '';
 
