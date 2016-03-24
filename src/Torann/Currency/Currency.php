@@ -108,17 +108,22 @@ class Currency
 
         $decimalPoint = $this->currencies[$currency]['decimal_point'];
         $thousandPoint = $this->currencies[$currency]['thousand_point'];
+        
+        /**
+	 * If your default currency is not equal to actual currency
+	 * we need to understand if your default is USD or not.
+	 * If your default is not USD we need to force inversion of the $value
+	 */
+        if ($currency != $this->code) {
+        	$value = $this->currencies[$this->code]['value'];
 
-        if ($value = $this->currencies[$currency]['value']) {
-            if ($inverse) {
-                $value = $number * (1 / $value);
-            }
-            else {
-                $value = $number * $value;
-            }
-        }
-        else {
-            $value = $number;
+        	if ($inverse || $this->code != 'USD') {
+            	$value = $number * (1 / $value);
+        	} else {
+            	$value = $number * $value;
+        	}
+        } else {
+        	$value = $number;
         }
 
         $string = '';
