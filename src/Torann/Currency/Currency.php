@@ -315,12 +315,22 @@ class Currency
      */
     public function getCacheCurrencies()
     {
+        if(is_a($this->getDriver(), 'Torann\Currency\Drivers\Database')){
+            $table_name = $this->getConfig('table', 'currencies');
+
+            if(!Schema::hasTable($table_name)) {
+                return $this->currencies;
+            }
+        }
+
         if (config('app.debug', false) === true) {
-            return $this->currencies = $this->getDriver()->all();
+            return $this->currencies = $this->getDriver()
+                                            ->all();
         }
 
         return $this->currencies = $this->cache->rememberForever('torann.currency', function () {
-            return $this->getDriver()->all();
+            return $this->getDriver()
+                        ->all();
         });
     }
 
