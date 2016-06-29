@@ -48,7 +48,7 @@ class CurrencyServiceProvider extends ServiceProvider
     {
         $this->app->bind('currency', function ($app) {
             $config = $app->config->get('currency', []);
-            return new Currency($config, $app['cache'], $app['session'], $app['request']);
+            return new Currency($config, $app['cache']);
         });
     }
 

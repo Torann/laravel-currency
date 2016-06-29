@@ -17,6 +17,11 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-c
 
 ## Change Log
 
+#### v0.3.0
+
+- Fix [Bug 33](https://github.com/Torann/laravel-currency/issues/33)
+- Fix Polish currency
+
 #### v0.2.1
 
 - Force conversion to number [Bug 25](https://github.com/Torann/laravel-currency/issues/25)

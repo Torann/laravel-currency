@@ -3,8 +3,6 @@
 namespace Torann\Currency;
 
 use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
-use Illuminate\Session\SessionManager;
 use Illuminate\Contracts\Cache\Factory as FactoryContract;
 
 class Currency
@@ -24,13 +22,6 @@ class Currency
     protected $cache;
 
     /**
-     * Session manager instance.
-     *
-     * @var \Illuminate\Session\SessionManager
-     */
-    protected $session;
-
-    /**
      * User's currency
      *
      * @var string
@@ -45,39 +36,22 @@ class Currency
     protected $driver;
 
     /**
-     * All currencies
+     * Cached currencies
      *
      * @var array
      */
-    protected $currencies = [];
+    protected $currencies_cache;
 
     /**
      * Create a new instance.
      *
-     * @param array                               $config
-     * @param \Illuminate\Contracts\Cache\Factory $cache
-     * @param \Illuminate\Session\SessionManager  $session
-     * @param \Illuminate\Http\Request            $request
+     * @param array           $config
+     * @param FactoryContract $cache
      */
-    public function __construct(array $config, FactoryContract $cache, SessionManager $session, Request $request)
+    public function __construct(array $config, FactoryContract $cache)
     {
         $this->config = $config;
         $this->cache = $cache;
-        $this->session = $session;
-
-        // Initialize currencies and cache them
-        $this->getCacheCurrencies();
-
-        // Check for a user defined currency
-        if ($request->get('currency') && $this->hasCurrency($request->get('currency'))) {
-            $this->setCurrency($request->get('currency'));
-        }
-        elseif ($this->session->get('currency') && $this->hasCurrency($this->session->get('currency'))) {
-            $this->setCurrency($this->session->get('currency'));
-        }
-        else {
-            $this->setCurrency($this->getConfig('default'));
-        }
     }
 
     /**
@@ -99,17 +73,17 @@ class Currency
             $currency = $this->code;
         }
 
-        $symbolLeft = $this->currencies[$currency]['symbol_left'];
-        $symbolRight = $this->currencies[$currency]['symbol_right'];
+        $symbolLeft = $this->getCurrencyProp($currency, 'symbol_left');
+        $symbolRight = $this->getCurrencyProp($currency, 'symbol_right');
 
         if (is_null($decimalPlace)) {
-            $decimalPlace = $this->currencies[$currency]['decimal_place'];
+            $decimalPlace = $this->getCurrencyProp($currency, 'decimal_place');
         }
 
-        $decimalPoint = $this->currencies[$currency]['decimal_point'];
-        $thousandPoint = $this->currencies[$currency]['thousand_point'];
+        $decimalPoint = $this->getCurrencyProp($currency, 'decimal_point');
+        $thousandPoint = $this->getCurrencyProp($currency, 'thousand_point');
 
-        if ($value = $this->currencies[$currency]['value']) {
+        if ($value = $this->getCurrencyProp($currency, 'value')) {
             if ($inverse) {
                 $value = $number * (1 / $value);
             }
@@ -185,12 +159,12 @@ class Currency
      */
     public function normalize($number, $dec = false)
     {
-        $value = $this->currencies[$this->code]['value'];
+        $value = $this->getCurrencyProp($this->code, 'value');
 
         $value = $value ? ($number * $value) : $number;
 
         if ($dec === false) {
-            $dec = $this->currencies[$this->code]['decimal_place'];
+            $dec = $this->getCurrencyProp($this->code, 'decimal_place');
         }
 
         return number_format(round($value, (int)$dec), (int)$dec, '.', '');
@@ -206,10 +180,10 @@ class Currency
     public function getCurrencySymbol($right = false)
     {
         if ($right) {
-            return $this->currencies[$this->code]['symbol_right'];
+            return $this->getCurrencyProp($this->code, 'symbol_right');
         }
 
-        return $this->currencies[$this->code]['symbol_left'];
+        return $this->getCurrencyProp($this->code, 'symbol_left');
     }
 
     /**
@@ -221,7 +195,7 @@ class Currency
      */
     public function hasCurrency($code)
     {
-        return array_key_exists($code, $this->currencies);
+        return $this->getCurrencyValues($code) !== null;
     }
 
     /**
@@ -232,10 +206,6 @@ class Currency
     public function setCurrency($code)
     {
         $this->code = $code;
-
-        if ($this->session) {
-            $this->session->set('currency', $code);
-        }
     }
 
     /**
@@ -259,10 +229,10 @@ class Currency
     public function getCurrency($code = null)
     {
         if ($code && $this->hasCurrency($code)) {
-            return $this->currencies[$code];
+            return $this->getCurrencyValues($code);
         }
         else {
-            return $this->currencies[$this->code];
+            return $this->getCurrencyValues($this->code);
         }
     }
 
@@ -309,26 +279,50 @@ class Currency
     }
 
     /**
-     * Get cached currencies.
+     * Get values for given currency.
+     *
+     * @param string $currency
+     *
+     * @return array|null
+     */
+    protected function getCurrencyValues($currency)
+    {
+        if ($this->currencies_cache === null) {
+            if (config('app.debug', false) === true) {
+                $this->currencies_cache = $this->getDriver()->all();
+            }
+            else {
+                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
+                    return $this->getDriver()->all();
+                });
+            }
+        }
+
+        return array_key_exists($currency, $this->currencies_cache)
+            ? $this->currencies_cache[$currency]
+            : null;
+    }
+
+    /**
+     * Get a property from currency.
+     *
+     * @param string $currency
+     * @param string $key
+     * @param mixed  $default
      *
      * @return array
      */
-    public function getCacheCurrencies()
+    protected function getCurrencyProp($currency, $key, $default = null)
     {
-        if (config('app.debug', false) === true) {
-            return $this->currencies = $this->getDriver()->all();
-        }
-
-        return $this->currencies = $this->cache->rememberForever('torann.currency', function () {
-            return $this->getDriver()->all();
-        });
+        return Arr::get($this->getCurrencyValues($currency), $key, $default);
     }
 
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param  string $method
+     * @param  array  $parameters
+     *
      * @return mixed
      */
     public function __call($method, $parameters)
