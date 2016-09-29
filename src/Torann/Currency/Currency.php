@@ -26,7 +26,7 @@ class Currency
      *
      * @var string
      */
-    protected $code;
+    protected $user_currency;
 
     /**
      * Currency driver instance.
@@ -57,145 +57,76 @@ class Currency
     /**
      * Format given number.
      *
-     * @param float  $number
-     * @param null   $currency
-     * @param string $symbolStyle
-     * @param bool   $inverse
-     * @param string $roundingType
-     * @param null   $precision
-     * @param null   $decimalPlace
+     * @param float  $amount
+     * @param string $from
+     * @param string $to
      *
      * @return string
      */
-    public function format($number, $currency = null, $symbolStyle = '%symbol%', $inverse = false, $roundingType = '', $precision = null, $decimalPlace = null)
+    public function convert($amount, $from = null, $to = null)
     {
-        if (!$currency || !$this->hasCurrency($currency)) {
-            $currency = $this->code;
+        // Get currencies involved
+        $from = $from ?: $this->getConfig('default');
+        $to = $to ?: $this->getUserCurrency();
+
+        // Get exchange rates
+        $from_rate = $this->getCurrencyProp($from, 'exchange_rate');
+        $to_rate = $this->getCurrencyProp($to, 'exchange_rate');
+
+        // Skip invalid to currency rates
+        if ($to_rate === null) {
+            return null;
         }
 
-        $symbolLeft = $this->getCurrencyProp($currency, 'symbol_left');
-        $symbolRight = $this->getCurrencyProp($currency, 'symbol_right');
+        // Convert amount
+        $value = $amount * $to_rate * (1 / $from_rate);
 
-        if (is_null($decimalPlace)) {
-            $decimalPlace = $this->getCurrencyProp($currency, 'decimal_place');
-        }
-
-        $decimalPoint = $this->getCurrencyProp($currency, 'decimal_point');
-        $thousandPoint = $this->getCurrencyProp($currency, 'thousand_point');
-
-        if ($value = $this->getCurrencyProp($currency, 'value')) {
-            if ($inverse) {
-                $value = $number * (1 / $value);
-            }
-            else {
-                $value = $number * $value;
-            }
-        }
-        else {
-            $value = $number;
-        }
-
-        $string = '';
-
-        if ($symbolLeft) {
-            $string .= str_replace('%symbol%', $symbolLeft, $symbolStyle);
-
-            if ($this->getConfig('use_space')) {
-                $string .= ' ';
-            }
-        }
-
-        switch ($roundingType) {
-            case 'ceil':
-            case 'ceiling':
-                if ($precision != null) {
-                    $multiplier = pow(10, -(int)$precision);
-                }
-                else {
-                    $multiplier = pow(10, -(int)$decimalPlace);
-                }
-
-                $string .= number_format(ceil($value / $multiplier) * $multiplier, (int)$decimalPlace, $decimalPoint, $thousandPoint);
-                break;
-
-            case 'floor':
-                if ($precision != null) {
-                    $multiplier = pow(10, -(int)$precision);
-                }
-                else {
-                    $multiplier = pow(10, -(int)$decimalPlace);
-                }
-
-                $string .= number_format(floor($value / $multiplier) * $multiplier, (int)$decimalPlace, $decimalPoint, $thousandPoint);
-                break;
-
-            default:
-                if ($precision == null) {
-                    $precision = (int)$decimalPlace;
-                }
-
-                $string .= number_format(round($value, (int)$precision), (int)$decimalPlace, $decimalPoint, $thousandPoint);
-                break;
-        }
-
-        if ($symbolRight) {
-            if ($this->getConfig('use_space')) {
-                $string .= ' ';
-            }
-
-            $string .= str_replace('%symbol%', $symbolRight, $symbolStyle);
-        }
-
-        return $string;
+        return $this->format($value, $to);
     }
 
     /**
-     * Normalize number
+     * Format the value into the desired currency.
      *
-     * @param float $number
-     * @param bool  $dec
-     *
-     * @return string
-     */
-    public function normalize($number, $dec = false)
-    {
-        $value = $this->getCurrencyProp($this->code, 'value');
-
-        $value = $value ? ($number * $value) : $number;
-
-        if ($dec === false) {
-            $dec = $this->getCurrencyProp($this->code, 'decimal_place');
-        }
-
-        return number_format(round($value, (int)$dec), (int)$dec, '.', '');
-    }
-
-    /**
-     * Get currency symbol.
-     *
-     * @param bool $right
-     *
-     * @return mixed
-     */
-    public function getCurrencySymbol($right = false)
-    {
-        if ($right) {
-            return $this->getCurrencyProp($this->code, 'symbol_right');
-        }
-
-        return $this->getCurrencyProp($this->code, 'symbol_left');
-    }
-
-    /**
-     * Determine if given currency exists.
-     *
+     * @param float  $value
      * @param string $code
      *
-     * @return bool
+     * @return string
      */
-    public function hasCurrency($code)
+    public function format($value, $code = null)
     {
-        return $this->getCurrencyValues($code) !== null;
+        // Get default currency if one is not set
+        $code = $code ?: $this->getConfig('default');
+
+        // Get the measurement format
+        $format = $this->getCurrencyProp($code, 'currency_format');
+
+        // Value Regex
+        $valRegex = '/([0-9].*|)[0-9]/';
+
+        // Match decimal and thousand separators
+        preg_match_all('/[\s\',.!]/', $format, $separators);
+
+        if ($thousand = array_get($separators, '0.0', null)) {
+            if ($thousand == '!') {
+                $thousand = '';
+            }
+        }
+
+        $decimal = array_get($separators, '0.1', null);
+
+        // Match format for decimals count
+        preg_match($valRegex, $format, $valFormat);
+
+        $valFormat = array_get($valFormat, 0, 0);
+
+        // Count decimals length
+        $decimals = $decimal ? strlen(substr(strrchr($valFormat, $decimal), 1)) : 0;
+
+        // Format the value
+        $value = number_format($value, $decimals, $decimal, $thousand);
+
+        // Return the formatted measurement
+        return preg_replace($valRegex, $value, $format);
     }
 
     /**
@@ -203,9 +134,9 @@ class Currency
      *
      * @param string $code
      */
-    public function setCurrency($code)
+    public function setUserCurrency($code)
     {
-        $this->code = $code;
+        $this->user_currency = strtoupper($code);
     }
 
     /**
@@ -213,9 +144,21 @@ class Currency
      *
      * @return string
      */
-    public function getCurrencyCode()
+    public function getUserCurrency()
     {
-        return $this->code;
+        return $this->user_currency ?: $this->getConfig('default');
+    }
+
+    /**
+     * Determine if the provided currency is valid.
+     *
+     * @param string $code
+     *
+     * @return array|null
+     */
+    public function hasCurrency($code)
+    {
+        return Arr::exists($this->getCurrencies(), $code);
     }
 
     /**
@@ -224,37 +167,55 @@ class Currency
      *
      * @param string $code
      *
-     * @return array
+     * @return array|null
      */
     public function getCurrency($code = null)
     {
-        if ($code && $this->hasCurrency($code)) {
-            return $this->getCurrencyValues($code);
+        $code = $code ?: $this->getConfig('default');
+
+        return Arr::get($this->getCurrencies(), $code);
+    }
+
+    /**
+     * Return all active currencies.
+     *
+     * @return array
+     */
+    public function getCurrencies()
+    {
+        if ($this->currencies_cache === null) {
+            if (config('app.debug', false) === true) {
+                $this->currencies_cache = $this->getDriver()->all();
+            }
+            else {
+                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
+                    return $this->getDriver()->all();
+                });
+            }
         }
-        else {
-            return $this->getCurrencyValues($this->code);
-        }
+
+        return $this->currencies_cache;
     }
 
     /**
      * Get moderation driver.
      *
-     * @return Drivers\AbstractDriver
+     * @return \Torann\Currency\Contracts\DriverInterface
      */
     public function getDriver()
     {
-        if ($this->driver) {
-            return $this->driver;
+        if ($this->driver === null) {
+            // Get driver configuration
+            $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
+
+            // Get driver class
+            $driver = Arr::pull($config, 'class');
+
+            // Create driver instance
+            $this->driver = app($driver, [$config]);
         }
 
-        // Get driver configuration
-        $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
-
-        // Get driver class
-        $driver = Arr::pull($config, 'class');
-
-        // Create driver instance
-        return $this->driver = app($driver, [$config]);
+        return $this->driver;
     }
 
     /**
@@ -279,42 +240,17 @@ class Currency
     }
 
     /**
-     * Get values for given currency.
+     * Get the given property value from provided currency.
      *
-     * @param string $currency
-     *
-     * @return array|null
-     */
-    protected function getCurrencyValues($currency)
-    {
-        if ($this->currencies_cache === null) {
-            if (config('app.debug', false) === true) {
-                $this->currencies_cache = $this->getDriver()->all();
-            }
-            else {
-                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
-                    return $this->getDriver()->all();
-                });
-            }
-        }
-
-        return array_key_exists($currency, $this->currencies_cache)
-            ? $this->currencies_cache[$currency]
-            : null;
-    }
-
-    /**
-     * Get a property from currency.
-     *
-     * @param string $currency
+     * @param string $code
      * @param string $key
      * @param mixed  $default
      *
      * @return array
      */
-    protected function getCurrencyProp($currency, $key, $default = null)
+    protected function getCurrencyProp($code, $key, $default = null)
     {
-        return Arr::get($this->getCurrencyValues($currency), $key, $default);
+        return Arr::get($this->getCurrency($code), $key, $default);
     }
 
     /**

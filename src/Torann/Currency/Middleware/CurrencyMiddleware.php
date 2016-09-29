@@ -23,16 +23,8 @@ class CurrencyMiddleware
         }
 
         // Check for a user defined currency
-        if ($request->get('currency') && currency()->hasCurrency($request->get('currency'))) {
-            $currency = $request->get('currency');
-        }
-        elseif ($request->getSession()->get('currency')
-            && currency()->hasCurrency($request->getSession()->get('currency'))
-        ) {
-            $currency = $request->getSession()->get('currency');
-        }
-        else {
-            $currency = currency()->getConfig('default');
+        if (($currency = $this->getUserCurrency($request)) === null) {
+            $currency = $this->getDefaultCurrency();
         }
 
         // Set user currency
@@ -42,11 +34,45 @@ class CurrencyMiddleware
     }
 
     /**
+     * Get the user selected currency.
+     *
+     * @param Request $request
+     *
+     * @return string|null
+     */
+    protected function getUserCurrency(Request $request)
+    {
+        // Check request for currency
+        $currency = $request->get('currency');
+        if (currency()->hasCurrency($currency) === true) {
+            return $currency;
+        }
+
+        // Get currency from session
+        $currency = $request->getSession()->get('currency');
+        if (currency()->hasCurrency($currency) === true) {
+            return $currency;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the application default currency.
+     *
+     * @return string
+     */
+    protected function getDefaultCurrency()
+    {
+        return currency()->getConfig('default');
+    }
+
+    /**
      * Determine if the application is running in the console.
      *
      * @return bool
      */
-    protected function runningInConsole()
+    private function runningInConsole()
     {
         return app()->runningInConsole();
     }
@@ -57,10 +83,14 @@ class CurrencyMiddleware
      * @param string  $currency
      * @param Request $request
      */
-    protected function setUserCurrency($currency, $request)
+    private function setUserCurrency($currency, $request)
     {
-        currency()->setCurrency($currency);
+        $currency = strtoupper($currency);
 
+        // Set user selection globally
+        currency()->setUserCurrency($currency);
+
+        // Save it for later too!
         $request->getSession()->put(['currency' => $currency]);
         $request->getSession()->reflash();
     }

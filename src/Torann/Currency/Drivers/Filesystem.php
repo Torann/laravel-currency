@@ -42,18 +42,15 @@ class Filesystem extends AbstractDriver
         // Created at stamp
         $created = new DateTime('now');
 
-        $currencies[$params['code']] = array_merge([
-            'title' => '',
-            'symbol_left' => '',
-            'symbol_right' => '',
-            'code' => '',
-            'decimal_place' => 2,
-            'value' => 1.00000000,
-            'decimal_point' => '.',
-            'thousand_point' => ',',
-            'status' => 0,
-            'created_at' => $created->format('Y-m-d H:i:s'),
-            'updated_at' => $created->format('Y-m-d H:i:s'),
+        $currencies[$params['currency_code']] = array_merge([
+            'currency_name' => '',
+            'currency_code' => '',
+            'currency_symbol' => '',
+            'currency_format' => '',
+            'exchange_rate' => 1,
+            'active' => 0,
+            'created_at' => $created,
+            'updated_at' => $created,
         ], $params);
 
         return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
@@ -98,7 +95,7 @@ class Filesystem extends AbstractDriver
         $updated = is_null($timestamp) ? new DateTime('now') : $timestamp;
 
         if (isset($currencies[$code])) {
-            $currencies[$code]['value'] = $value;
+            $currencies[$code]['exchange_rate'] = $value;
             $currencies[$code]['updated_at'] = $updated->format('Y-m-d H:i:s');
 
             return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));

@@ -17,6 +17,10 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-c
 
 ## Change Log
 
+#### v1.0.0
+
+- Major overhaul
+
 #### v0.3.0
 
 - Fix [Bug 33](https://github.com/Torann/laravel-currency/issues/33)

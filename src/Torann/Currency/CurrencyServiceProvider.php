@@ -46,9 +46,11 @@ class CurrencyServiceProvider extends ServiceProvider
      */
     public function registerCurrency()
     {
-        $this->app->bind('currency', function ($app) {
-            $config = $app->config->get('currency', []);
-            return new Currency($config, $app['cache']);
+        $this->app->singleton('currency', function ($app) {
+            return new Currency(
+                $app->config->get('currency', []),
+                $app['cache']
+            );
         });
     }
 

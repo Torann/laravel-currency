@@ -4,9 +4,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default currency
+    | Application Currency
     |--------------------------------------------------------------------------
-     */
+    |
+    | The application currency determines the default currency that will be
+    | used by the currency service provider. You are free to set this value
+    | to any of the currencies which will be supported by the application.
+    |
+    */
 
     'default' => 'USD',
 
@@ -18,17 +23,9 @@ return [
     | Only required if you with to use the Open Exchange Rates api. You can
     | always just use Yahoo, the current default.
     |
-     */
+    */
 
     'api_key' => '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Add a single space between value and currency symbol
-    |--------------------------------------------------------------------------
-     */
-
-    'use_space' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -58,7 +55,7 @@ return [
         'database' => [
             'class' => \Torann\Currency\Drivers\Database::class,
             'connection' => null,
-            'table' => 'currencies',
+            'table' => 'countries',
         ],
 
         'filesystem' => [

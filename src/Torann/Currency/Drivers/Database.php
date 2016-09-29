@@ -32,20 +32,20 @@ class Database extends AbstractDriver
      */
     public function create(array $params)
     {
-        $table = $this->getConfig('table', 'currencies');
+        $table = $this->getConfig('table');
+
+        // Created at stamp
+        $created = new DateTime('now');
 
         $params = array_merge([
-            'title' => '',
-            'symbol_left' => '',
-            'symbol_right' => '',
-            'code' => '',
-            'decimal_place' => 2,
-            'value' => 1.00000000,
-            'decimal_point' => '.',
-            'thousand_point' => ',',
-            'status' => 0,
-            'created_at' => new DateTime('now'),
-            'updated_at' => new DateTime('now'),
+            'currency_name' => '',
+            'currency_code' => '',
+            'currency_symbol' => '',
+            'currency_format' => '',
+            'exchange_rate' => 1,
+            'active' => 0,
+            'created_at' => $created,
+            'updated_at' => $created,
         ], $params);
 
         return $this->database->table($table)->insert($params);
@@ -56,25 +56,25 @@ class Database extends AbstractDriver
      */
     public function all()
     {
-        $cache = [];
+        $table = $this->getConfig('table');
 
-        $table = $this->getConfig('table', 'currencies');
-
-        foreach ($this->database->table($table)->get() as $currency) {
-            $cache[$currency->code] = [
-                'id' => $currency->id,
-                'title' => $currency->title,
-                'symbol_left' => $currency->symbol_left,
-                'symbol_right' => $currency->symbol_right,
-                'decimal_place' => $currency->decimal_place,
-                'value' => $currency->value,
-                'decimal_point' => $currency->decimal_point,
-                'thousand_point' => $currency->thousand_point,
-                'code' => $currency->code,
-            ];
-        }
-
-        return $cache;
+        return $this->database->table($table)
+            ->where('active', 1)
+            ->get()
+            ->keyBy('currency_code')
+            ->map(function($item) {
+                return [
+                    'currency_name' => $item->currency_name,
+                    'currency_code' => strtoupper($item->currency_code),
+                    'currency_symbol' => $item->currency_symbol,
+                    'currency_format' => $item->currency_format,
+                    'exchange_rate' => $item->exchange_rate,
+                    'active' => $item->active,
+                    'created_at' => $item->updated_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            })
+            ->all();
     }
 
     /**
@@ -82,10 +82,11 @@ class Database extends AbstractDriver
      */
     public function find($code)
     {
-        $table = $this->getConfig('table', 'currencies');
+        $table = $this->getConfig('table');
 
         return $this->database->table($table)
-            ->where('code', $code)
+            ->where('currency_code', strtoupper($code))
+            ->where('active', 1)
             ->first();
     }
 
@@ -94,15 +95,15 @@ class Database extends AbstractDriver
      */
     public function update($code, $value, DateTime $timestamp = null)
     {
-        $table = $this->getConfig('table', 'currencies');
+        $table = $this->getConfig('table');
 
         // Create timestamp
         $timestamp = is_null($timestamp) ? new DateTime('now') : $timestamp;
 
         return $this->database->table($table)
-            ->where('code', $code)
+            ->where('currency_code', strtoupper($code))
             ->update([
-                'value' => $value,
+                'exchange_rate' => $value,
                 'updated_at' => $timestamp,
             ]);
     }
@@ -112,10 +113,10 @@ class Database extends AbstractDriver
      */
     public function delete($code)
     {
-        $table = $this->getConfig('table', 'currencies');
+        $table = $this->getConfig('table');
 
         return $this->database->table($table)
-            ->where('code', $code)
+            ->where('currency_code', strtoupper($code))
             ->delete();
     }
 }

@@ -1,33 +1,36 @@
 <?php
 
-if (! function_exists('currency')) {
+if (!function_exists('currency')) {
     /**
-     * Format given number.
+     * Convert given number.
      *
-     * @param float  $number
-     * @param null   $currency
-     * @param string $symbolStyle
-     * @param bool   $inverse
-     * @param string $roundingType
-     * @param null   $precision
-     * @param null   $decimalPlace
+     * @param float  $amount
+     * @param string $from
+     * @param string $to
      *
      * @return \Torann\Currency\Currency|string
      */
-    function currency($number = null, $currency = null, $symbolStyle = '%symbol%', $inverse = false, $roundingType = '', $precision = null, $decimalPlace = null)
+    function currency($amount = null, $from = null, $to = null)
     {
-        if (is_null($number)) {
+        if (is_null($amount)) {
             return app('currency');
         }
 
-        return app('currency')->format(
-            $number,
-            $currency,
-            $symbolStyle,
-            $inverse,
-            $roundingType,
-            $precision,
-            $decimalPlace
-        );
+        return app('currency')->convert($amount, $from, $to);
+    }
+}
+
+if (!function_exists('currency_format')) {
+    /**
+     * Format given number.
+     *
+     * @param float  $amount
+     * @param string $currency
+     *
+     * @return string
+     */
+    function currency_format($amount = null, $currency = null)
+    {
+        return app('currency')->format($amount, $currency);
     }
 }
