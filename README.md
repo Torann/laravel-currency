@@ -9,7 +9,7 @@ This provides Laravel with currency functions such as currency formatting and co
 
 ## Official Documentation
 
-Documentation for the package can be found on [Lyften.com](http://lyften.com/projects/laravel-currency/).
+Documentation for the package can be found on [https://github.com/Torann/laravel-currency/tree/0.3/docs](https://github.com/Torann/laravel-currency/tree/0.3/docs).
 
 ## Laravel 4
 
