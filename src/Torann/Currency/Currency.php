@@ -158,7 +158,7 @@ class Currency
      */
     public function hasCurrency($code)
     {
-        return Arr::exists($this->getCurrencies(), $code);
+        return Arr::exists($this->getCurrencies(), strtoupper($code));
     }
 
     /**
@@ -173,7 +173,7 @@ class Currency
     {
         $code = $code ?: $this->getConfig('default');
 
-        return Arr::get($this->getCurrencies(), $code);
+        return Arr::get($this->getCurrencies(), strtoupper($code));
     }
 
     /**
