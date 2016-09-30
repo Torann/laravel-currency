@@ -31,9 +31,16 @@ class Currency
     /**
      * Currency driver instance.
      *
-     * @var Drivers\AbstractDriver
+     * @var Contracts\DriverInterface
      */
     protected $driver;
+
+    /**
+     * Formatter instance.
+     *
+     * @var Contracts\FormatterInterface
+     */
+    protected $formatter;
 
     /**
      * Cached currencies
@@ -96,6 +103,11 @@ class Currency
     {
         // Get default currency if one is not set
         $code = $code ?: $this->getConfig('default');
+
+        // Check for a custom formatter
+        if ($formatter = $this->getFormatter()) {
+            return $formatter->format($value, $code);
+        }
 
         // Get the measurement format
         $format = $this->getCurrencyProp($code, 'format');
@@ -198,7 +210,7 @@ class Currency
     }
 
     /**
-     * Get moderation driver.
+     * Get storage driver.
      *
      * @return \Torann\Currency\Contracts\DriverInterface
      */
@@ -216,6 +228,27 @@ class Currency
         }
 
         return $this->driver;
+    }
+
+    /**
+     * Get formatter driver.
+     *
+     * @return \Torann\Currency\Contracts\FormatterInterface
+     */
+    public function getFormatter()
+    {
+        if ($this->formatter === null && $this->getConfig('formatter') !== null) {
+            // Get formatter configuration
+            $config = $this->getConfig('formatters.' . $this->getConfig('formatter'), []);
+
+            // Get formatter class
+            $class = Arr::pull($config, 'class');
+
+            // Create formatter instance
+            $this->formatter = app($class, array_filter([$config]));
+        }
+
+        return $this->formatter;
     }
 
     /**
