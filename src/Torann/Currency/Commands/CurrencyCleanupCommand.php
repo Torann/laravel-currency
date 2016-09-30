@@ -47,8 +47,12 @@ class CurrencyCleanupCommand extends Command
      */
     public function fire()
     {
+        // Clear cache
         $this->currency->clearCache();
+        $this->comment('Currency cache cleaned.');
 
-        $this->info('Currency cache cleaned.');
+        // Force the system to rebuild cache
+        $this->currency->getCurrencies();
+        $this->comment('Currency cache rebuilt.');
     }
 }

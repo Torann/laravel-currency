@@ -70,7 +70,7 @@ class CurrencyUpdateCommand extends Command
 
     private function updateFromYahoo($defaultCurrency)
     {
-        $this->info('Updating currency exchange rates from Finance Yahoo...');
+        $this->comment('Updating currency exchange rates from Finance Yahoo...');
 
         $data = [];
 
@@ -95,10 +95,11 @@ class CurrencyUpdateCommand extends Command
                 }
             }
 
-            $this->currency->clearCache();
+            // Clear old cache
+            $this->call('currency:cleanup');
         }
 
-        $this->info('Update!');
+        $this->info('Complete');
     }
 
     private function updateFromOpenExchangeRates($defaultCurrency, $api)
@@ -111,6 +112,7 @@ class CurrencyUpdateCommand extends Command
         // Error getting content?
         if (isset($content->error)) {
             $this->error($content->description);
+
             return;
         }
 
