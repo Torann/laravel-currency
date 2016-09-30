@@ -62,7 +62,7 @@ class Database extends AbstractDriver
             ->where('active', 1)
             ->get()
             ->keyBy('code')
-            ->map(function($item) {
+            ->map(function ($item) {
                 return [
                     'name' => $item->name,
                     'code' => strtoupper($item->code),
