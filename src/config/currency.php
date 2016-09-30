@@ -66,4 +66,37 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Currency Formatter
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure a custom formatting of currencies. The reason for
+    | this is to help further internationalize the formatting past the basic
+    | format column in the table. When set to `null` the package will use the
+    | format from storage.
+    |
+    | More info:
+    | http://lyften.com/projects/laravel-currency/doc/formatting.html
+    |
+    */
+
+    'formatter' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Currency Formatter Specific Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Here you may configure as many currency formatters as you wish.
+    |
+    */
+
+    'formatters' => [
+
+        'php_intl' => [
+            'class' => \Torann\Currency\Formatters\PHPIntl::class,
+        ],
+
+    ],
 ];

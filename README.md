@@ -20,6 +20,9 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-c
 #### v1.0.0
 
 - Major overhaul
+- 118 currencies added
+- Added support for custom formatters [See repo](https://github.com/Torann/laravel-currency/tree/master/src/Torann/Currency/Formatters)
+- Rebuild cache after exchange rate updates
 
 #### v0.3.0
 

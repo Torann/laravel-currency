@@ -36,7 +36,10 @@ class CurrencyServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerCurrency();
-        $this->registerCurrencyCommands();
+
+        if ($this->app->runningInConsole()){
+            $this->registerCurrencyCommands();
+        }
     }
 
     /**
