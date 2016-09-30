@@ -55,7 +55,7 @@ return [
         'database' => [
             'class' => \Torann\Currency\Drivers\Database::class,
             'connection' => null,
-            'table' => 'countries',
+            'table' => 'currencies',
         ],
 
         'filesystem' => [

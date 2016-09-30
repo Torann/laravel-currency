@@ -38,10 +38,10 @@ class Database extends AbstractDriver
         $created = new DateTime('now');
 
         $params = array_merge([
-            'currency_name' => '',
-            'currency_code' => '',
-            'currency_symbol' => '',
-            'currency_format' => '',
+            'name' => '',
+            'code' => '',
+            'symbol' => '',
+            'format' => '',
             'exchange_rate' => 1,
             'active' => 0,
             'created_at' => $created,
@@ -61,13 +61,13 @@ class Database extends AbstractDriver
         return $this->database->table($table)
             ->where('active', 1)
             ->get()
-            ->keyBy('currency_code')
+            ->keyBy('code')
             ->map(function($item) {
                 return [
-                    'currency_name' => $item->currency_name,
-                    'currency_code' => strtoupper($item->currency_code),
-                    'currency_symbol' => $item->currency_symbol,
-                    'currency_format' => $item->currency_format,
+                    'name' => $item->name,
+                    'code' => strtoupper($item->code),
+                    'symbol' => $item->symbol,
+                    'format' => $item->format,
                     'exchange_rate' => $item->exchange_rate,
                     'active' => $item->active,
                     'created_at' => $item->updated_at,
@@ -85,7 +85,7 @@ class Database extends AbstractDriver
         $table = $this->getConfig('table');
 
         return $this->database->table($table)
-            ->where('currency_code', strtoupper($code))
+            ->where('code', strtoupper($code))
             ->where('active', 1)
             ->first();
     }
@@ -101,7 +101,7 @@ class Database extends AbstractDriver
         $timestamp = is_null($timestamp) ? new DateTime('now') : $timestamp;
 
         return $this->database->table($table)
-            ->where('currency_code', strtoupper($code))
+            ->where('code', strtoupper($code))
             ->update([
                 'exchange_rate' => $value,
                 'updated_at' => $timestamp,
@@ -116,7 +116,7 @@ class Database extends AbstractDriver
         $table = $this->getConfig('table');
 
         return $this->database->table($table)
-            ->where('currency_code', strtoupper($code))
+            ->where('code', strtoupper($code))
             ->delete();
     }
 }

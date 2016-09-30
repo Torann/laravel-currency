@@ -98,7 +98,7 @@ class Currency
         $code = $code ?: $this->getConfig('default');
 
         // Get the measurement format
-        $format = $this->getCurrencyProp($code, 'currency_format');
+        $format = $this->getCurrencyProp($code, 'format');
 
         // Value Regex
         $valRegex = '/([0-9].*|)[0-9]/';

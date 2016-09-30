@@ -42,11 +42,11 @@ class Filesystem extends AbstractDriver
         // Created at stamp
         $created = new DateTime('now');
 
-        $currencies[$params['currency_code']] = array_merge([
-            'currency_name' => '',
-            'currency_code' => '',
-            'currency_symbol' => '',
-            'currency_format' => '',
+        $currencies[$params['code']] = array_merge([
+            'name' => '',
+            'code' => '',
+            'symbol' => '',
+            'format' => '',
             'exchange_rate' => 1,
             'active' => 0,
             'created_at' => $created,
