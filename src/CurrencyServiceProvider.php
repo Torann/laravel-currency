@@ -16,7 +16,7 @@ class CurrencyServiceProvider extends ServiceProvider
         if ($this->isLumen() === false) {
             $this->publishes([
                 __DIR__ . '/config/currency.php' => config_path('currency.php'),
-            ]);
+            ], 'config');
 
             $this->mergeConfigFrom(
                 __DIR__ . '/config/currency.php', 'currency'
@@ -64,18 +64,11 @@ class CurrencyServiceProvider extends ServiceProvider
      */
     public function registerCurrencyCommands()
     {
-        $this->app['currency.update'] = $this->app->share(function ($app) {
-            return new Commands\CurrencyUpdateCommand($app['currency']);
-        });
-
-        $this->app['currency.cleanup'] = $this->app->share(function ($app) {
-            return new Commands\CurrencyCleanupCommand($app['currency']);
-        });
-
-        $this->commands(
-            'currency.update',
-            'currency.cleanup'
-        );
+        $this->commands([
+            Console\Cleanup::class,
+            Console\Manage::class,
+            Console\Update::class,
+        ]);
     }
 
     /**
@@ -86,17 +79,5 @@ class CurrencyServiceProvider extends ServiceProvider
     protected function isLumen()
     {
         return str_contains($this->app->version(), 'Lumen') === true;
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [
-            'currency',
-        ];
     }
 }
