@@ -6,7 +6,7 @@ use DateTime;
 use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
-class CurrencyUpdateCommand extends Command
+class Update extends Command
 {
     /**
      * The name and signature of the console command.

@@ -5,7 +5,7 @@ namespace Torann\Currency\Commands;
 use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
-class CurrencyCleanupCommand extends Command
+class Cleanup extends Command
 {
     /**
      * The name and signature of the console command.
