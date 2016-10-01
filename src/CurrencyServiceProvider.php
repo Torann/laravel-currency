@@ -15,16 +15,16 @@ class CurrencyServiceProvider extends ServiceProvider
     {
         if ($this->isLumen() === false) {
             $this->publishes([
-                __DIR__ . '/../../config/currency.php' => config_path('currency.php'),
+                __DIR__ . '/config/currency.php' => config_path('currency.php'),
             ]);
 
             $this->mergeConfigFrom(
-                __DIR__ . '/../../config/currency.php', 'currency'
+                __DIR__ . '/config/currency.php', 'currency'
             );
         }
 
         $this->publishes([
-            __DIR__ . '/../../migrations' => base_path('/database/migrations'),
+            __DIR__ . '/migrations' => base_path('/database/migrations'),
         ], 'migrations');
     }
 

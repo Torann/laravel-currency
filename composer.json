@@ -19,10 +19,10 @@
     },
     "autoload": {
         "files": [
-            "src/Torann/Currency/helpers.php"
+            "src/helpers.php"
         ],
         "psr-4": {
-            "Torann\\Currency\\": "src/Torann/Currency"
+            "Torann\\Currency\\": "src/"
         }
     },
     "extra": {
