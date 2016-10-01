@@ -92,6 +92,6 @@ class CurrencyMiddleware
 
         // Save it for later too!
         $request->getSession()->put(['currency' => $currency]);
-        $request->getSession()->reflash();
+        $request->getSession()->keep('currency');
     }
 }
