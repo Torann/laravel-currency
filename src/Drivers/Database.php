@@ -32,7 +32,10 @@ class Database extends AbstractDriver
      */
     public function create(array $params)
     {
-        $table = $this->getConfig('table');
+        // Ensure the currency doesn't already exist
+        if ($this->find($params['code'], null) !== null) {
+            return 'exists';
+        }
 
         // Created at stamp
         $created = new DateTime('now');
@@ -48,7 +51,7 @@ class Database extends AbstractDriver
             'updated_at' => $created,
         ], $params);
 
-        return $this->database->table($table)->insert($params);
+        return $this->database->table($this->getConfig('table'))->insert($params);
     }
 
     /**
@@ -58,9 +61,7 @@ class Database extends AbstractDriver
     {
         $table = $this->getConfig('table');
 
-        return $this->database->table($table)
-            ->where('active', 1)
-            ->get()
+        return $this->database->table($table)->get()
             ->keyBy('code')
             ->map(function ($item) {
                 return [
@@ -80,32 +81,34 @@ class Database extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function find($code)
+    public function find($code, $active = 1)
     {
-        $table = $this->getConfig('table');
+        $query = $this->database->table($this->getConfig('table'))
+            ->where('code', strtoupper($code));
 
-        return $this->database->table($table)
-            ->where('code', strtoupper($code))
-            ->where('active', 1)
-            ->first();
+        // Make active optional
+        if (is_null($active) === false) {
+            $query->where('active', $active);
+        }
+
+        return $query->first();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update($code, $value, DateTime $timestamp = null)
+    public function update($code, array $attributes, DateTime $timestamp = null)
     {
         $table = $this->getConfig('table');
 
         // Create timestamp
-        $timestamp = is_null($timestamp) ? new DateTime('now') : $timestamp;
+        if (empty($attributes['updated_at']) === false) {
+            $attributes['updated_at'] = new DateTime('now');
+        }
 
         return $this->database->table($table)
             ->where('code', strtoupper($code))
-            ->update([
-                'exchange_rate' => $value,
-                'updated_at' => $timestamp,
-            ]);
+            ->update($attributes);
     }
 
     /**

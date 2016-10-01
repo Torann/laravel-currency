@@ -1,8 +1,7 @@
 <?php
 
-namespace Torann\Currency\Commands;
+namespace Torann\Currency\Console;
 
-use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
 class Cleanup extends Command
@@ -30,12 +29,10 @@ class Cleanup extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param Currency $currency
      */
-    public function __construct(Currency $currency)
+    public function __construct()
     {
-        $this->currency = $currency;
+        $this->currency = app('currency');
 
         parent::__construct();
     }

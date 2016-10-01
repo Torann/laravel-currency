@@ -1,7 +1,8 @@
 <?php
 
-namespace Torann\Currency\Commands;
+namespace Torann\Currency\Console;
 
+use Illuminate\Support\Arr;
 use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
@@ -13,8 +14,8 @@ class Manage extends Command
      * @var string
      */
     protected $signature = 'currency:manage
-                                {action : Action to perform (add, remove, or update)}
-                                {currencies : Name or comma separated names of the currencies}';
+                                {action : Action to perform (add, update, or delete)}
+                                {currency : Code or comma separated list of codes for currencies}';
 
     /**
      * The console command description.
@@ -24,20 +25,26 @@ class Manage extends Command
     protected $description = 'Manage currency values';
 
     /**
-     * Currency instance
+     * Currency storage instance
      *
-     * @var \Torann\Currency\Currency
+     * @var \Torann\Currency\Contracts\DriverInterface
      */
-    protected $currency;
+    protected $storage;
+
+    /**
+     * All installable currencies.
+     *
+     * @var array
+     */
+    protected $currencies;
 
     /**
      * Create a new command instance.
-     *
-     * @param Currency $currency
      */
-    public function __construct(Currency $currency)
+    public function __construct()
     {
-        $this->currency = $currency;
+        $this->storage = app('currency')->getDriver();
+        $this->currencies = include(__DIR__ . '/../data/currencies.php');
 
         parent::__construct();
     }
@@ -49,12 +56,117 @@ class Manage extends Command
      */
     public function fire()
     {
-        // Clear cache
-        $this->currency->clearCache();
-        $this->comment('Currency cache cleaned.');
+        $action = $this->getActionArgument(['add', 'update', 'delete']);
 
-        // Force the system to rebuild cache
-        $this->currency->getCurrencies();
-        $this->comment('Currency cache rebuilt.');
+        foreach ($this->getCurrencyArgument() as $currency) {
+            $this->$action(strtoupper($currency));
+        }
+    }
+
+    /**
+     * Add currency to storage.
+     *
+     * @param string $currency
+     *
+     * @return void
+     */
+    protected function add($currency)
+    {
+        if (($data = $this->getCurrency($currency)) === null) {
+            return $this->error("Currency \"{$currency}\" not found");
+        }
+
+        $this->output->write("Adding {$currency} currency...");
+
+        $data['code'] = $currency;
+
+        if (is_string($result = $this->storage->create($data))) {
+            $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
+        }
+        else {
+            $this->output->writeln("<info>success</info>");
+        }
+    }
+
+    /**
+     * Update currency in storage.
+     *
+     * @param string $currency
+     *
+     * @return void
+     */
+    protected function update($currency)
+    {
+        if (($data = $this->getCurrency($currency)) === null) {
+            return $this->error("Currency \"{$currency}\" not found");
+        }
+
+        $this->output->write("Updating {$currency} currency...");
+
+        if (is_string($result = $this->storage->update($currency, $data))) {
+            $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
+        }
+        else {
+            $this->output->writeln("<info>success</info>");
+        }
+    }
+
+    /**
+     * Delete currency from storage.
+     *
+     * @param string $currency
+     *
+     * @return void
+     */
+    protected function delete($currency)
+    {
+        $this->output->write("Deleting {$currency} currency...");
+
+        if (is_string($result = $this->storage->delete($currency))) {
+            $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
+        }
+        else {
+            $this->output->writeln("<info>success</info>");
+        }
+    }
+
+    /**
+     * Get currency argument.
+     *
+     * @return array
+     */
+    protected function getCurrencyArgument()
+    {
+        return explode(',', preg_replace('/\s+/', '', $this->argument('currency')));
+    }
+
+    /**
+     * Get action argument.
+     *
+     * @param  array $validActions
+     *
+     * @return array
+     */
+    protected function getActionArgument($validActions = [])
+    {
+        $action = strtolower($this->argument('action'));
+
+        if (in_array($action, $validActions) === false) {
+            throw new \RuntimeException("The \"{$action}\" option does not exist.");
+        }
+
+        return $action;
+    }
+
+    /**
+     * Get currency data.
+     *
+     * @param string $currency
+     *
+     * @return array
+     */
+    protected function getCurrency($currency)
+    {
+        return Arr::get($this->currencies, $currency);
     }
 }

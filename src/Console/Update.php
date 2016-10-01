@@ -1,9 +1,8 @@
 <?php
 
-namespace Torann\Currency\Commands;
+namespace Torann\Currency\Console;
 
 use DateTime;
-use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
 class Update extends Command
@@ -32,12 +31,10 @@ class Update extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param Currency $currency
      */
-    public function __construct(Currency $currency)
+    public function __construct()
     {
-        $this->currency = $currency;
+        $this->currency = app('currency');
 
         parent::__construct();
     }
@@ -91,7 +88,9 @@ class Update extends Command
                 $value = substr($line, 11, 6) * 1.00;
 
                 if ($value) {
-                    $this->currency->getDriver()->update($code, $value);
+                    $this->currency->getDriver()->update($code, [
+                        'exchange_rate' => $value,
+                    ]);
                 }
             }
 
@@ -121,7 +120,10 @@ class Update extends Command
 
         // Update each rate
         foreach ($content->rates as $code => $value) {
-            $this->currency->getDriver()->update($code, $value, $timestamp);
+            $this->currency->getDriver()->update($code, [
+                'exchange_rate' => $value,
+                'updated_at' => $timestamp,
+            ]);
         }
 
         $this->currency->clearCache();

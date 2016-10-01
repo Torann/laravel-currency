@@ -26,21 +26,22 @@ interface DriverInterface
      * Get given currency from storage.
      *
      * @param string $code
+     * @param int    $active
      *
      * @return mixed
      */
-    public function find($code);
+    public function find($code, $active = 1);
 
     /**
      * Update given currency.
      *
      * @param string   $code
-     * @param float    $value
+     * @param array    $attributes
      * @param DateTime $timestamp
      *
      * @return int
      */
-    public function update($code, $value, DateTime $timestamp = null);
+    public function update($code, array $attributes, DateTime $timestamp = null);
 
     /**
      * Remove given currency from storage.

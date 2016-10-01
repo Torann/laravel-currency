@@ -3,6 +3,7 @@
 namespace Torann\Currency\Drivers;
 
 use DateTime;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Filesystem\Factory as FactoryContract;
 
@@ -39,8 +40,13 @@ class Filesystem extends AbstractDriver
         // Get all as an array
         $currencies = $this->all();
 
+        // Verify the currency doesn't exists
+        if (isset($currencies[$params['code']]) === true) {
+            return 'exists';
+        }
+
         // Created at stamp
-        $created = new DateTime('now');
+        $created = (new DateTime('now'))->format('Y-m-d H:i:s');
 
         $currencies[$params['code']] = array_merge([
             'name' => '',
@@ -75,15 +81,22 @@ class Filesystem extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function find($code)
+    public function find($code, $active = 1)
     {
-        return Arr::get($this->all(), $code);
+        $currency = Arr::get($this->all(), $code);
+
+        // Skip active check
+        if (is_null($active)) {
+            return $currency;
+        }
+
+        return Arr::get($currency, 'active', 1) ? $currency : null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update($code, $value, DateTime $timestamp = null)
+    public function update($code, array $attributes, DateTime $timestamp = null)
     {
         // Get blacklist path
         $path = $this->getConfig('path');
@@ -91,17 +104,20 @@ class Filesystem extends AbstractDriver
         // Get all as an array
         $currencies = $this->all();
 
-        // Updated at stamp
-        $updated = is_null($timestamp) ? new DateTime('now') : $timestamp;
-
-        if (isset($currencies[$code])) {
-            $currencies[$code]['exchange_rate'] = $value;
-            $currencies[$code]['updated_at'] = $updated->format('Y-m-d H:i:s');
-
-            return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
+        // Verify the currency exists
+        if (isset($currencies[$code]) === false) {
+            return 'doesn\'t exists';
         }
 
-        return false;
+        // Create timestamp
+        if (empty($attributes['updated_at']) === false) {
+            $attributes['updated_at'] = (new DateTime('now'))->format('Y-m-d H:i:s');
+        }
+
+        // Merge values
+        $currencies[$code] = array_merge($currencies[$code], $attributes);
+
+        return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
     }
 
     /**
@@ -115,12 +131,13 @@ class Filesystem extends AbstractDriver
         // Get all as an array
         $currencies = $this->all();
 
-        if (isset($currencies[$code])) {
-            unset($currencies[$code]);
-
-            return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
+        // Verify the currency exists
+        if (isset($currencies[$code]) === false) {
+            return false;
         }
 
-        return false;
+        unset($currencies[$code]);
+
+        return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
     }
 }
