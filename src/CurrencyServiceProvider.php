@@ -7,28 +7,6 @@ use Illuminate\Support\ServiceProvider;
 class CurrencyServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        if ($this->isLumen() === false) {
-            $this->publishes([
-                __DIR__ . '/config/currency.php' => config_path('currency.php'),
-            ], 'config');
-
-            $this->mergeConfigFrom(
-                __DIR__ . '/config/currency.php', 'currency'
-            );
-        }
-
-        $this->publishes([
-            __DIR__ . '/migrations' => base_path('/database/migrations'),
-        ], 'migrations');
-    }
-
-    /**
      * Register the service provider.
      *
      * @return void
@@ -38,6 +16,7 @@ class CurrencyServiceProvider extends ServiceProvider
         $this->registerCurrency();
 
         if ($this->app->runningInConsole()) {
+            $this->registerResources();
             $this->registerCurrencyCommands();
         }
     }
@@ -58,7 +37,29 @@ class CurrencyServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register generator of Currency.
+     * Register currency resources.
+     *
+     * @return void
+     */
+    public function registerResources()
+    {
+        if ($this->isLumen() === false) {
+            $this->publishes([
+                __DIR__ . '/../config/currency.php' => config_path('currency.php'),
+            ], 'config');
+
+            $this->mergeConfigFrom(
+                __DIR__ . '/../config/currency.php', 'currency'
+            );
+        }
+
+        $this->publishes([
+            __DIR__ . '/../database/migrations' => base_path('/database/migrations'),
+        ], 'migrations');
+    }
+
+    /**
+     * Register currency commands.
      *
      * @return void
      */

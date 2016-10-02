@@ -44,7 +44,7 @@ class Manage extends Command
     public function __construct()
     {
         $this->storage = app('currency')->getDriver();
-        $this->currencies = include(__DIR__ . '/../data/currencies.php');
+        $this->currencies = include(__DIR__ . '/../../resources/currencies.php');
 
         parent::__construct();
     }
