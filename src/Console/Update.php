@@ -47,10 +47,10 @@ class Update extends Command
     public function fire()
     {
         // Get Settings
-        $defaultCurrency = $this->currency->getConfig('default');
+        $defaultCurrency = $this->currency->config('default');
 
         if ($this->input->getOption('openexchangerates')) {
-            if (!$api = $this->currency->getConfig('api_key')) {
+            if (!$api = $this->currency->config('api_key')) {
                 $this->error('An API key is needed from OpenExchangeRates.org to continue.');
 
                 return;

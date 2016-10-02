@@ -26,7 +26,7 @@ class Filesystem extends AbstractDriver
     {
         parent::__construct($config);
 
-        $this->filesystem = $filesystem->disk($this->getConfig('disk'));
+        $this->filesystem = $filesystem->disk($this->config('disk'));
     }
 
     /**
@@ -35,7 +35,7 @@ class Filesystem extends AbstractDriver
     public function create(array $params)
     {
         // Get blacklist path
-        $path = $this->getConfig('path');
+        $path = $this->config('path');
 
         // Get all as an array
         $currencies = $this->all();
@@ -68,7 +68,7 @@ class Filesystem extends AbstractDriver
     public function all()
     {
         // Get blacklist path
-        $path = $this->getConfig('path');
+        $path = $this->config('path');
 
         // Get contents if file exists
         $contents = $this->filesystem->exists($path)
@@ -99,7 +99,7 @@ class Filesystem extends AbstractDriver
     public function update($code, array $attributes, DateTime $timestamp = null)
     {
         // Get blacklist path
-        $path = $this->getConfig('path');
+        $path = $this->config('path');
 
         // Get all as an array
         $currencies = $this->all();
@@ -126,7 +126,7 @@ class Filesystem extends AbstractDriver
     public function delete($code)
     {
         // Get blacklist path
-        $path = $this->getConfig('path');
+        $path = $this->config('path');
 
         // Get all as an array
         $currencies = $this->all();

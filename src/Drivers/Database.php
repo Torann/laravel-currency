@@ -24,7 +24,7 @@ class Database extends AbstractDriver
     {
         parent::__construct($config);
 
-        $this->database = $database->connection($this->getConfig('connection'));
+        $this->database = $database->connection($this->config('connection'));
     }
 
     /**
@@ -51,7 +51,7 @@ class Database extends AbstractDriver
             'updated_at' => $created,
         ], $params);
 
-        return $this->database->table($this->getConfig('table'))->insert($params);
+        return $this->database->table($this->config('table'))->insert($params);
     }
 
     /**
@@ -59,7 +59,7 @@ class Database extends AbstractDriver
      */
     public function all()
     {
-        $table = $this->getConfig('table');
+        $table = $this->config('table');
 
         return $this->database->table($table)->get()
             ->keyBy('code')
@@ -83,7 +83,7 @@ class Database extends AbstractDriver
      */
     public function find($code, $active = 1)
     {
-        $query = $this->database->table($this->getConfig('table'))
+        $query = $this->database->table($this->config('table'))
             ->where('code', strtoupper($code));
 
         // Make active optional
@@ -99,7 +99,7 @@ class Database extends AbstractDriver
      */
     public function update($code, array $attributes, DateTime $timestamp = null)
     {
-        $table = $this->getConfig('table');
+        $table = $this->config('table');
 
         // Create timestamp
         if (empty($attributes['updated_at']) === false) {
@@ -116,7 +116,7 @@ class Database extends AbstractDriver
      */
     public function delete($code)
     {
-        $table = $this->getConfig('table');
+        $table = $this->config('table');
 
         return $this->database->table($table)
             ->where('code', strtoupper($code))

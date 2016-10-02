@@ -73,7 +73,7 @@ class Currency
     public function convert($amount, $from = null, $to = null)
     {
         // Get currencies involved
-        $from = $from ?: $this->getConfig('default');
+        $from = $from ?: $this->config('default');
         $to = $to ?: $this->getUserCurrency();
 
         // Get exchange rates
@@ -102,7 +102,7 @@ class Currency
     public function format($value, $code = null)
     {
         // Get default currency if one is not set
-        $code = $code ?: $this->getConfig('default');
+        $code = $code ?: $this->config('default');
 
         // Check for a custom formatter
         if ($formatter = $this->getFormatter()) {
@@ -158,7 +158,7 @@ class Currency
      */
     public function getUserCurrency()
     {
-        return $this->user_currency ?: $this->getConfig('default');
+        return $this->user_currency ?: $this->config('default');
     }
 
     /**
@@ -174,6 +174,18 @@ class Currency
     }
 
     /**
+     * Determine if the provided currency is active.
+     *
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function isActive($code)
+    {
+        return (bool) Arr::get($this->getCurrency($code), 'active', false);
+    }
+
+    /**
      * Return the current currency if the
      * one supplied is not valid.
      *
@@ -183,7 +195,7 @@ class Currency
      */
     public function getCurrency($code = null)
     {
-        $code = $code ?: $this->getConfig('default');
+        $code = $code ?: $this->config('default');
 
         return Arr::get($this->getCurrencies(), strtoupper($code));
     }
@@ -218,7 +230,7 @@ class Currency
     {
         if ($this->driver === null) {
             // Get driver configuration
-            $config = $this->getConfig('drivers.' . $this->getConfig('driver'), []);
+            $config = $this->config('drivers.' . $this->config('driver'), []);
 
             // Get driver class
             $driver = Arr::pull($config, 'class');
@@ -237,9 +249,9 @@ class Currency
      */
     public function getFormatter()
     {
-        if ($this->formatter === null && $this->getConfig('formatter') !== null) {
+        if ($this->formatter === null && $this->config('formatter') !== null) {
             // Get formatter configuration
-            $config = $this->getConfig('formatters.' . $this->getConfig('formatter'), []);
+            $config = $this->config('formatters.' . $this->config('formatter'), []);
 
             // Get formatter class
             $class = Arr::pull($config, 'class');
@@ -267,8 +279,12 @@ class Currency
      *
      * @return mixed
      */
-    public function getConfig($key, $default = null)
+    public function config($key = null, $default = null)
     {
+        if ($key === null) {
+            return $this->config;
+        }
+
         return Arr::get($this->config, $key, $default);
     }
 

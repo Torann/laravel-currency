@@ -64,7 +64,7 @@ class CurrencyMiddleware
      */
     protected function getDefaultCurrency()
     {
-        return currency()->getConfig('default');
+        return currency()->config('default');
     }
 
     /**
