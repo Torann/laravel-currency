@@ -67,10 +67,11 @@ class Currency
      * @param float  $amount
      * @param string $from
      * @param string $to
+     * @param bool   $format
      *
      * @return string
      */
-    public function convert($amount, $from = null, $to = null)
+    public function convert($amount, $from = null, $to = null, $format = true)
     {
         // Get currencies involved
         $from = $from ?: $this->config('default');
@@ -87,8 +88,11 @@ class Currency
 
         // Convert amount
         $value = $amount * $to_rate * (1 / $from_rate);
-
-        return $this->format($value, $to);
+        
+        if($format)
+            return $this->format($value, $to);
+        else
+            return $value;
     }
 
     /**
