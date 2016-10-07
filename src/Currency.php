@@ -170,7 +170,10 @@ class Currency
      */
     public function hasCurrency($code)
     {
-        return Arr::exists($this->getCurrencies(), strtoupper($code));
+        if(method_exists(new Arr(),'exist'))
+            return Arr::exist($this->getCurrencies(), strtoupper($code));
+        elseif (method_exists(new Arr(),'has'))
+            return Arr::has($this->getCurrencies(), strtoupper($code));
     }
 
     /**
