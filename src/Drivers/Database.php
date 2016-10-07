@@ -61,7 +61,7 @@ class Database extends AbstractDriver
     {
         $table = $this->config('table');
 
-        return $this->database->table($table)->get()
+        return collect($this->database->table($table)->get())
             ->keyBy('code')
             ->map(function ($item) {
                 return [
