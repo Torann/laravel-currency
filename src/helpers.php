@@ -7,16 +7,17 @@ if (!function_exists('currency')) {
      * @param float  $amount
      * @param string $from
      * @param string $to
+     * @param bool   $format
      *
      * @return \Torann\Currency\Currency|string
      */
-    function currency($amount = null, $from = null, $to = null)
+    function currency($amount = null, $from = null, $to = null, $format = true)
     {
         if (is_null($amount)) {
             return app('currency');
         }
 
-        return app('currency')->convert($amount, $from, $to);
+        return app('currency')->convert($amount, $from, $to, $format);
     }
 }
 
