@@ -208,11 +208,30 @@ class Currency
     }
 
     /**
-     * Return all active currencies.
+     * Return all currencies.
      *
      * @return array
      */
     public function getCurrencies()
+    {
+        if ($this->currencies_cache === null) {
+            if (config('app.debug', false) === true) {
+                $this->currencies_cache = $this->getDriver()->all();
+            }
+            else {
+                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
+                    return $this->getDriver()->all();
+                });
+            }
+        }
+
+        return $this->currencies_cache;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveCurrencies()
     {
         if ($this->currencies_cache === null) {
             if (config('app.debug', false) === true) {

@@ -122,4 +122,12 @@ class Database extends AbstractDriver
             ->where('code', strtoupper($code))
             ->delete();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function active()
+    {
+        return $this->database->table($this->config('table'))->where('active', 1)->all();
+    }
 }
