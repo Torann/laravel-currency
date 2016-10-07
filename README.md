@@ -22,6 +22,13 @@ For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-c
 
 ## Change Log
 
+#### v1.0.1
+
+- Conditional format on conversion
+- Fixed bug #51
+- Fixed bug #52
+- Fixed bug #54
+
 #### v1.0.0
 
 - Major overhaul

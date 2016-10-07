@@ -49,11 +49,4 @@ interface DriverInterface
      * @return int
      */
     public function delete($code);
-
-    /**
-     * Get all active currencies.
-     *
-     * @return mixed
-     */
-    public function active();
 }

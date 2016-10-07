@@ -88,11 +88,11 @@ class Currency
 
         // Convert amount
         $value = $amount * $to_rate * (1 / $from_rate);
-        
-        if($format)
-            return $this->format($value, $to);
-        else
-            return $value;
+
+        // To format or not to format?
+        return $format === true
+            ? $this->format($value, $to)
+            : $value;
     }
 
     /**
@@ -174,10 +174,7 @@ class Currency
      */
     public function hasCurrency($code)
     {
-        if(method_exists(new Arr(),'exist'))
-            return Arr::exist($this->getCurrencies(), strtoupper($code));
-        elseif (method_exists(new Arr(),'has'))
-            return Arr::has($this->getCurrencies(), strtoupper($code));
+        return array_key_exists(strtoupper($code), $this->getCurrencies());
     }
 
     /**
@@ -229,22 +226,15 @@ class Currency
     }
 
     /**
+     * Return all active currencies.
+     *
      * @return array
      */
     public function getActiveCurrencies()
     {
-        if ($this->currencies_cache === null) {
-            if (config('app.debug', false) === true) {
-                $this->currencies_cache = $this->getDriver()->all();
-            }
-            else {
-                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
-                    return $this->getDriver()->all();
-                });
-            }
-        }
-
-        return $this->currencies_cache;
+        return array_filter($this->getCurrencies(), function($currency) {
+            return $currency['active'] == true;
+        });
     }
 
     /**

@@ -140,27 +140,4 @@ class Filesystem extends AbstractDriver
 
         return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function active()
-    {
-       // Get blacklist path
-        $path = $this->config('path');
-
-        // Get contents if file exists
-        $contents = $this->filesystem->exists($path)
-            ? $this->filesystem->get($path)
-            : "{}";
-
-        $currencies_array = json_decode($contents, true);
-        foreach ($currencies_array as $currency)
-        {
-            if($currency['active'] == 0)
-                unset($currencies_array[$currency['code']]);
-        }
-
-        return $currencies_array;
-    }
 }

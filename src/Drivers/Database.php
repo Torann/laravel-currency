@@ -3,6 +3,7 @@
 namespace Torann\Currency\Drivers;
 
 use DateTime;
+use Illuminate\Support\Collection;
 use Illuminate\Database\DatabaseManager;
 
 class Database extends AbstractDriver
@@ -59,10 +60,9 @@ class Database extends AbstractDriver
      */
     public function all()
     {
-        $table = $this->config('table');
+        $collection = new Collection($this->database->table($this->config('table'))->get());
 
-        return collect($this->database->table($table)->get())
-            ->keyBy('code')
+        return $collection->keyBy('code')
             ->map(function ($item) {
                 return [
                     'name' => $item->name,
@@ -121,13 +121,5 @@ class Database extends AbstractDriver
         return $this->database->table($table)
             ->where('code', strtoupper($code))
             ->delete();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function active()
-    {
-        return $this->database->table($this->config('table'))->where('active', 1)->all();
     }
 }
