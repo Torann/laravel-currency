@@ -61,7 +61,7 @@ class Database extends AbstractDriver
     {
         $table = $this->config('table');
 
-        return $this->database->table($table)->get()
+        return collect($this->database->table($table)->get())
             ->keyBy('code')
             ->map(function ($item) {
                 return [
@@ -121,5 +121,13 @@ class Database extends AbstractDriver
         return $this->database->table($table)
             ->where('code', strtoupper($code))
             ->delete();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function active()
+    {
+        return $this->database->table($this->config('table'))->where('active', 1)->all();
     }
 }
