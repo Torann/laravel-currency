@@ -44,13 +44,13 @@ class CurrencyMiddleware
     {
         // Check request for currency
         $currency = $request->get('currency');
-        if (currency()->hasCurrency($currency) === true) {
+        if (currency()->isActive($currency) === true) {
             return $currency;
         }
 
         // Get currency from session
         $currency = $request->getSession()->get('currency');
-        if (currency()->hasCurrency($currency) === true) {
+        if (currency()->isActive($currency) === true) {
             return $currency;
         }
 
