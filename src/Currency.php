@@ -67,10 +67,11 @@ class Currency
      * @param float  $amount
      * @param string $from
      * @param string $to
+     * @param bool   $format
      *
      * @return string
      */
-    public function convert($amount, $from = null, $to = null)
+    public function convert($amount, $from = null, $to = null, $format = true)
     {
         // Get currencies involved
         $from = $from ?: $this->config('default');
@@ -87,8 +88,11 @@ class Currency
 
         // Convert amount
         $value = $amount * $to_rate * (1 / $from_rate);
-
-        return $this->format($value, $to);
+        
+        if($format)
+            return $this->format($value, $to);
+        else
+            return $value;
     }
 
     /**
@@ -170,7 +174,10 @@ class Currency
      */
     public function hasCurrency($code)
     {
-        return Arr::exists($this->getCurrencies(), strtoupper($code));
+        if(method_exists(new Arr(),'exist'))
+            return Arr::exist($this->getCurrencies(), strtoupper($code));
+        elseif (method_exists(new Arr(),'has'))
+            return Arr::has($this->getCurrencies(), strtoupper($code));
     }
 
     /**
@@ -201,11 +208,30 @@ class Currency
     }
 
     /**
-     * Return all active currencies.
+     * Return all currencies.
      *
      * @return array
      */
     public function getCurrencies()
+    {
+        if ($this->currencies_cache === null) {
+            if (config('app.debug', false) === true) {
+                $this->currencies_cache = $this->getDriver()->all();
+            }
+            else {
+                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
+                    return $this->getDriver()->all();
+                });
+            }
+        }
+
+        return $this->currencies_cache;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveCurrencies()
     {
         if ($this->currencies_cache === null) {
             if (config('app.debug', false) === true) {
