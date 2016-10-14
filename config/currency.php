@@ -43,6 +43,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default Storage Driver
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default cache driver that should be used
+    | by the framework.
+    |
+    | Supported: all cache drivers supported by Laravel
+    |
+    */
+
+    'cache_driver' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Storage Specific Configuration
     |--------------------------------------------------------------------------
     |

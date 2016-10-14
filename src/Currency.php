@@ -58,7 +58,7 @@ class Currency
     public function __construct(array $config, FactoryContract $cache)
     {
         $this->config = $config;
-        $this->cache = $cache;
+        $this->cache = $cache->store($this->config('cache_driver'));
     }
 
     /**
