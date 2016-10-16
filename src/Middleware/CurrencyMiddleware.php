@@ -24,6 +24,7 @@ class CurrencyMiddleware
 
         // Check for a user defined currency
         if (($currency = $this->getUserCurrency($request)) === null) {
+
 //            $currency = $this->getDefaultCurrency();
             $currency = session()->get('currency') ? session()->get('currency') : config('currency.default');
         }
@@ -46,13 +47,15 @@ class CurrencyMiddleware
         // Check request for currency
         $currency = $request->get('currency');
         if (currency()->isActive($currency) === true) {
-            dd($currency);
+            return $currency;
         }
 
         // Get currency from session
         $currency = $request->getSession()->get('currency');
         if (currency()->isActive($currency) === true) {
-            dd($currency);
+
+            return $currency;
+
         }
 
         return null;
@@ -88,6 +91,7 @@ class CurrencyMiddleware
     {
         $currency = strtoupper($currency);
 
+
         if ($request->has('currency')) {
 
             $request->session()->put('currency', $request->get('currency'));
@@ -100,10 +104,5 @@ class CurrencyMiddleware
 
         }
 
-        // Set user selection globally
-
-
-        // Save it for later too!
-//        $request->getSession()->keep('currency');
     }
 }
