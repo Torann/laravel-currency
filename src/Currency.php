@@ -117,10 +117,14 @@ class Currency
         $format = $this->getCurrencyProp($code, 'format');
 
         // Value Regex
-        $valRegex = '/([0-9].*|)[0-9]/';
+        $valRegex = '/(?:[0-9].*|)[0-9]/';
+
+        // Value string
+        preg_match($valRegex, $format, $match);
+        $valString = $match[0];
 
         // Match decimal and thousand separators
-        preg_match_all('/[\s\',.!]/', $format, $separators);
+        preg_match_all('/[\s\',.!]/', $valString, $separators);
 
         if ($thousand = array_get($separators, '0.0', null)) {
             if ($thousand == '!') {
@@ -142,7 +146,7 @@ class Currency
         $value = number_format($value, $decimals, $decimal, $thousand);
 
         // Return the formatted measurement
-        return preg_replace($valRegex, $value, $format);
+        return str_replace($valString, $value, $format);
     }
 
     /**
