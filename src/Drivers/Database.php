@@ -42,6 +42,7 @@ class Database extends AbstractDriver
         $created = new DateTime('now');
 
         $params = array_merge([
+            'id' => '',
             'name' => '',
             'code' => '',
             'symbol' => '',
@@ -65,6 +66,7 @@ class Database extends AbstractDriver
         return $collection->keyBy('code')
             ->map(function ($item) {
                 return [
+                    'id' => $item->id,
                     'name' => $item->name,
                     'code' => strtoupper($item->code),
                     'symbol' => $item->symbol,
