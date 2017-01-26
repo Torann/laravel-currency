@@ -109,7 +109,7 @@ class Filesystem extends AbstractDriver
         }
 
         // Create timestamp
-        if (empty($attributes['updated_at']) === false) {
+        if (empty($attributes['updated_at']) === true) {
             $attributes['updated_at'] = (new DateTime('now'))->format('Y-m-d H:i:s');
         }
 
