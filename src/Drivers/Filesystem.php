@@ -19,14 +19,13 @@ class Filesystem extends AbstractDriver
     /**
      * Create a new driver instance.
      *
-     * @param array           $config
-     * @param FactoryContract $filesystem
+     * @param array $config
      */
-    public function __construct(array $config, FactoryContract $filesystem)
+    public function __construct(array $config)
     {
         parent::__construct($config);
 
-        $this->filesystem = $filesystem->disk($this->config('disk'));
+        $this->filesystem = app('filesystem')->disk($this->config('disk'));
     }
 
     /**

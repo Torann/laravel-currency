@@ -18,14 +18,13 @@ class Database extends AbstractDriver
     /**
      * Create a new driver instance.
      *
-     * @param array           $config
-     * @param DatabaseManager $database
+     * @param array $config
      */
-    public function __construct(array $config, DatabaseManager $database)
+    public function __construct(array $config)
     {
         parent::__construct($config);
 
-        $this->database = $database->connection($this->config('connection'));
+        $this->database = app('db')->connection($this->config('connection'));
     }
 
     /**
