@@ -273,7 +273,7 @@ class Currency
             $class = Arr::pull($config, 'class');
 
             // Create formatter instance
-            $this->formatter = app($class, array_filter([$config]));
+            $this->formatter = new $class(array_filter($config));
         }
 
         return $this->formatter;
