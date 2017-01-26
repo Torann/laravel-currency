@@ -227,7 +227,7 @@ return [
     'DKK' => [
         'name' => 'Danish Krone',
         'symbol' => 'kr.',
-        'format' => 'kr. 1,0.00',
+        'format' => '1 0,00 kr.',
         'exchange_rate' => 0.00,
     ],
     'DOP' => [
@@ -605,7 +605,7 @@ return [
     'NOK' => [
         'name' => 'Norwegian Krone',
         'symbol' => 'kr',
-        'format' => 'kr 1 0,00',
+        'format' => '1.0,00 kr',
         'exchange_rate' => 0.00,
     ],
     'NPR' => [
@@ -725,7 +725,7 @@ return [
     'SEK' => [
         'name' => 'Swedish Krona',
         'symbol' => 'kr',
-        'format' => '1,0.00 kr',
+        'format' => '1 0,00 kr',
         'exchange_rate' => 0.00,
     ],
     'SGD' => [
