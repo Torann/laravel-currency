@@ -86,13 +86,21 @@ class Currency
             return null;
         }
 
+        // Do we have a negative value?
+        if ($negative = $amount < 0) {
+            $amount = $amount * -1;
+        }
+
         // Convert amount
         $value = $amount * $to_rate * (1 / $from_rate);
 
-        // To format or not to format?
-        return $format === true
-            ? $this->format($value, $to)
-            : $value;
+        // Should the result be formatted?
+        if ($format === true) {
+            return ($negative ? '-' : '') . $this->format($value, $to);
+        }
+
+        // Return value
+        return $value * ($negative ? -1 : 1);
     }
 
     /**
