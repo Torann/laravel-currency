@@ -252,7 +252,7 @@ class Currency
             $driver = Arr::pull($config, 'class');
 
             // Create driver instance
-            $this->driver = app($driver, [$config]);
+            $this->driver = new $driver($config);
         }
 
         return $this->driver;
