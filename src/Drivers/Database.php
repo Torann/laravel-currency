@@ -41,7 +41,6 @@ class Database extends AbstractDriver
         $created = new DateTime('now');
 
         $params = array_merge([
-            'id' => '',
             'name' => '',
             'code' => '',
             'symbol' => '',
