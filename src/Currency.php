@@ -95,7 +95,7 @@ class Currency
         }
 
         // Return value
-        return $value * ($negative ? -1 : 1);
+        return $value;
     }
 
     /**
