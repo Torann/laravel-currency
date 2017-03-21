@@ -86,21 +86,16 @@ class Currency
             return null;
         }
 
-        // Do we have a negative value?
-        if ($negative = $amount < 0) {
-            $amount = $amount * -1;
-        }
-
         // Convert amount
         $value = $amount * $to_rate * (1 / $from_rate);
 
         // Should the result be formatted?
         if ($format === true) {
-            return ($negative ? '-' : '') . $this->format($value, $to);
+            return $this->format($value, $to);
         }
 
         // Return value
-        return $value * ($negative ? -1 : 1);
+        return $value;
     }
 
     /**
@@ -146,11 +141,19 @@ class Currency
         // Count decimals length
         $decimals = $decimal ? strlen(substr(strrchr($valFormat, $decimal), 1)) : 0;
 
+        // Do we have a negative value?
+        if ($negative = $value < 0 ? '-' : '') {
+            $value = $value * -1;
+        }
+
         // Format the value
         $value = number_format($value, $decimals, $decimal, $thousand);
 
-        // Return the formatted measurement
-        return preg_replace($valRegex, $value, $format);
+        // Apply the formatted measurement
+        $value = preg_replace($valRegex, $value, $format);
+
+        // Return value
+        return $negative . $value;
     }
 
     /**
