@@ -24,7 +24,9 @@ class CurrencyMiddleware
 
         // Check for a user defined currency
         if (($currency = $this->getUserCurrency($request)) === null) {
-            $currency = $this->getDefaultCurrency();
+
+//            $currency = $this->getDefaultCurrency();
+            $currency = session()->get('currency') ? session()->get('currency') : config('currency.default');
         }
 
         // Set user currency
@@ -51,7 +53,9 @@ class CurrencyMiddleware
         // Get currency from session
         $currency = $request->getSession()->get('currency');
         if (currency()->isActive($currency) === true) {
+
             return $currency;
+
         }
 
         return null;
@@ -80,18 +84,25 @@ class CurrencyMiddleware
     /**
      * Set the user currency.
      *
-     * @param string  $currency
+     * @param string $currency
      * @param Request $request
      */
     private function setUserCurrency($currency, $request)
     {
         $currency = strtoupper($currency);
 
-        // Set user selection globally
-        currency()->setUserCurrency($currency);
 
-        // Save it for later too!
-        $request->getSession()->put(['currency' => $currency]);
-        $request->getSession()->keep('currency');
+        if ($request->has('currency')) {
+
+            $request->session()->put('currency', $request->get('currency'));
+
+            currency()->setUserCurrency($currency);
+
+        } else {
+
+            $request->getSession()->put(['currency' => $currency]);
+
+        }
+
     }
 }
