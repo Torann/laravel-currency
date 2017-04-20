@@ -82,6 +82,8 @@ class CurrencyMiddleware
      *
      * @param string  $currency
      * @param Request $request
+     *
+     * @return string
      */
     private function setUserCurrency($currency, $request)
     {
@@ -92,6 +94,7 @@ class CurrencyMiddleware
 
         // Save it for later too!
         $request->getSession()->put(['currency' => $currency]);
-        $request->getSession()->keep('currency');
+
+        return $currency;
     }
 }
