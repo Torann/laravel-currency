@@ -197,7 +197,7 @@ class Currency
      */
     public function isActive($code)
     {
-        return (bool) Arr::get($this->getCurrency($code), 'active', false);
+        return $code && (bool) Arr::get($this->getCurrency($code), 'active', false);
     }
 
     /**
