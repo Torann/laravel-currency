@@ -111,6 +111,9 @@ class Currency
         // Get default currency if one is not set
         $code = $code ?: $this->config('default');
 
+        // Remove unnecessary characters
+        $value = preg_replace('/[\s\',!]/', '', $value);
+
         // Check for a custom formatter
         if ($formatter = $this->getFormatter()) {
             return $formatter->format($value, $code);
