@@ -213,7 +213,7 @@ class Currency
      */
     public function getCurrency($code = null)
     {
-        $code = $code ?: $this->config('default');
+        $code = $code ?: $this->getUserCurrency();
 
         return Arr::get($this->getCurrencies(), strtoupper($code));
     }
@@ -330,6 +330,18 @@ class Currency
     protected function getCurrencyProp($code, $key, $default = null)
     {
         return Arr::get($this->getCurrency($code), $key, $default);
+    }
+
+    /**
+     * Get a given value from the current currency.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return Arr::get($this->getCurrency(), $key);
     }
 
     /**
