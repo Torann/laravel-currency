@@ -891,15 +891,21 @@ return [
         'exchange_rate' => 0.00,
     ],
     'XAF' => [
-        'name' => 'Franc de la Communaute financi',
-        'symbol' => 'F',
-        'format' => '1,0.00F',
+        'name' => 'Franc CFA (XAF)',
+        'symbol' => 'F.CFA',
+        'format' => '1,0.00 F.CFA',
         'exchange_rate' => 0.00,
     ],
     'XCD' => [
         'name' => 'East Caribbean Dollar',
         'symbol' => '$',
         'format' => '$1,0.00',
+        'exchange_rate' => 0.00,
+    ],
+    'XOF' => [
+        'name' => 'Franc CFA (XOF)',
+        'symbol' => 'F.CFA',
+        'format' => '1,0.00 F.CFA',
         'exchange_rate' => 0.00,
     ],
     'XPF' => [
