@@ -103,10 +103,11 @@ class Currency
      *
      * @param float  $value
      * @param string $code
+     * @param bool   $include_symbol
      *
      * @return string
      */
-    public function format($value, $code = null)
+    public function format($value, $code = null, $include_symbol = true)
     {
         // Get default currency if one is not set
         $code = $code ?: $this->config('default');
@@ -153,7 +154,9 @@ class Currency
         $value = number_format($value, $decimals, $decimal, $thousand);
 
         // Apply the formatted measurement
-        $value = preg_replace($valRegex, $value, $format);
+        if ($include_symbol) {
+            $value = preg_replace($valRegex, $value, $format);
+        }
 
         // Return value
         return $negative . $value;

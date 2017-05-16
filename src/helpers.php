@@ -27,11 +27,12 @@ if (!function_exists('currency_format')) {
      *
      * @param float  $amount
      * @param string $currency
+     * @param bool   $include_symbol
      *
      * @return string
      */
-    function currency_format($amount = null, $currency = null)
+    function currency_format($amount = null, $currency = null, $include_symbol = true)
     {
-        return app('currency')->format($amount, $currency);
+        return app('currency')->format($amount, $currency, $include_symbol);
     }
 }
