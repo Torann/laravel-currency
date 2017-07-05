@@ -183,15 +183,27 @@ class Currency
     }
 
     /**
-     * Determine if the provided currency is valid.
+     * Determine if the provided currency is exist.
      *
      * @param string $code
      *
-     * @return array|null
+     * @return bool
      */
     public function hasCurrency($code)
     {
         return array_key_exists(strtoupper($code), $this->getCurrencies());
+    }
+
+    /**
+     * Determine if the provided currency is valid.
+     *
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function isValidCurrency($code)
+    {
+        return array_key_exists(strtoupper($code), $this->getAllCurrencies());
     }
 
     /**
@@ -222,7 +234,17 @@ class Currency
     }
 
     /**
-     * Return all currencies.
+     * Return all existed currencies.
+     *
+     * @return array
+     */
+    public function getAllCurrencies()
+    {
+        return include(__DIR__ . '/../resources/currencies.php');
+    }
+
+    /**
+     * Return all supported currencies.
      *
      * @return array
      */
