@@ -82,7 +82,7 @@ class Currency
         $to_rate = $this->getCurrencyProp($to, 'exchange_rate');
 
         // Skip invalid to currency rates
-        if ($to_rate === null) {
+        if (!$to_rate || !$from_rate) {
             return null;
         }
 
