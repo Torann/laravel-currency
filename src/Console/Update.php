@@ -44,7 +44,7 @@ class Update extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         // Get Settings
         $defaultCurrency = $this->currency->config('default');

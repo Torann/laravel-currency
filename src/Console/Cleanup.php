@@ -42,7 +42,7 @@ class Cleanup extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         // Clear cache
         $this->currency->clearCache();
