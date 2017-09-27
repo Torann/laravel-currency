@@ -23,12 +23,19 @@ interface DriverInterface
     public function all();
 
     /**
+     * Get all active currencies.
+     *
+     * @return array
+     */
+    public function allActive();
+
+    /**
      * Get given currency from storage.
      *
      * @param string $code
      * @param int    $active
      *
-     * @return mixed
+     * @return array|null
      */
     public function find($code, $active = 1);
 
@@ -41,7 +48,23 @@ interface DriverInterface
      *
      * @return int
      */
-    public function update($code, array $attributes, DateTime $timestamp = null);
+    public function update($code, array $attributes, DateTime $timestamp = NULL);
+
+    /**
+     * Activate given currency.
+     *
+     * @param  string  $code
+     * @return int
+     */
+    public function activate($code);
+
+    /**
+     * Deactivate given currency.
+     *
+     * @param  string  $code
+     * @return int
+     */
+    public function deactivate($code);
 
     /**
      * Remove given currency from storage.

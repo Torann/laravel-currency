@@ -54,7 +54,7 @@ class Manage extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $action = $this->getActionArgument(['add', 'update', 'delete']);
 

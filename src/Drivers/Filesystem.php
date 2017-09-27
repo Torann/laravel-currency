@@ -78,6 +78,22 @@ class Filesystem extends AbstractDriver
     }
 
     /**
+     * @inheritdoc
+     */
+    public function allActive()
+    {
+        $currencies = $this->all();
+
+        foreach ($currencies as $currency) {
+            if (! $currency['active']) {
+                unset($currencies[$currency['code']]);
+            }
+        }
+
+        return $currencies;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function find($code, $active = 1)

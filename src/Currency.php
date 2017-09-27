@@ -2,6 +2,7 @@
 
 namespace Torann\Currency;
 
+use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Cache\Factory as FactoryContract;
 
@@ -47,7 +48,7 @@ class Currency
      *
      * @var array
      */
-    protected $currencies_cache;
+    protected $active_cache;
 
     /**
      * Create a new instance.
@@ -73,6 +74,9 @@ class Currency
      */
     public function convert($amount, $from = null, $to = null, $format = true)
     {
+        $this->activateCurrencyIfNeeded($from);
+        $this->activateCurrencyIfNeeded($to);
+
         // Get currencies involved
         $from = $from ?: $this->config('default');
         $to = $to ?: $this->getUserCurrency();
@@ -82,7 +86,7 @@ class Currency
         $to_rate = $this->getCurrencyProp($to, 'exchange_rate');
 
         // Skip invalid to currency rates
-        if ($to_rate === null) {
+        if (! $to_rate || ! $from_rate) {
             return null;
         }
 
@@ -90,12 +94,35 @@ class Currency
         $value = $amount * $to_rate * (1 / $from_rate);
 
         // Should the result be formatted?
-        if ($format === true) {
+        if ($format) {
             return $this->format($value, $to);
         }
 
         // Return value
         return $value;
+    }
+
+    /**
+     * Active currency and update exchange rate if neeed.
+     *
+     * @param  string  $code
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function activateCurrencyIfNeeded($code)
+    {
+        if (! $this->isValidCurrency($code)) {
+            throw new \Exception("Given currency is not valid: {$code}");
+        }
+
+        if ($this->hasCurrency($code)) {
+            return;
+        }
+
+        $this->getDriver()->activate($code);
+
+        $this->updateRates();
     }
 
     /**
@@ -159,7 +186,18 @@ class Currency
         }
 
         // Return value
-        return $negative . $value;
+        return $negative.$value;
+    }
+
+    /**
+     * Update exchange rates from Yahoo or OpenExchangeRates.
+     *
+     * @param bool $openexchangerates
+     * @return bool
+     */
+    public function updateRates($openexchangerates = false)
+    {
+        return $openexchangerates ? $this->updateFromOpenExchangeRates() : $this->updateFromYahoo();
     }
 
     /**
@@ -183,11 +221,11 @@ class Currency
     }
 
     /**
-     * Determine if the provided currency is valid.
+     * Determine if the provided currency is exist.
      *
      * @param string $code
      *
-     * @return array|null
+     * @return bool
      */
     public function hasCurrency($code)
     {
@@ -195,20 +233,19 @@ class Currency
     }
 
     /**
-     * Determine if the provided currency is active.
+     * Determine if the provided currency is valid.
      *
      * @param string $code
      *
      * @return bool
      */
-    public function isActive($code)
+    public function isValidCurrency($code)
     {
-        return $code && (bool) Arr::get($this->getCurrency($code), 'active', false);
+        return array_key_exists(strtoupper($code), $this->getAllCurrencies());
     }
 
     /**
-     * Return the current currency if the
-     * one supplied is not valid.
+     * Return the current currency if the one supplied is not valid.
      *
      * @param string $code
      *
@@ -222,36 +259,23 @@ class Currency
     }
 
     /**
-     * Return all currencies.
+     * Return all existed currencies.
+     *
+     * @return array
+     */
+    public function getAllCurrencies()
+    {
+        return $this->getDriver()->all();
+    }
+
+    /**
+     * Return all supported currencies.
      *
      * @return array
      */
     public function getCurrencies()
     {
-        if ($this->currencies_cache === null) {
-            if (config('app.debug', false) === true) {
-                $this->currencies_cache = $this->getDriver()->all();
-            }
-            else {
-                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
-                    return $this->getDriver()->all();
-                });
-            }
-        }
-
-        return $this->currencies_cache;
-    }
-
-    /**
-     * Return all active currencies.
-     *
-     * @return array
-     */
-    public function getActiveCurrencies()
-    {
-        return array_filter($this->getCurrencies(), function($currency) {
-            return $currency['active'] == true;
-        });
+        return $this->getDriver()->allActive();
     }
 
     /**
@@ -261,9 +285,9 @@ class Currency
      */
     public function getDriver()
     {
-        if ($this->driver === null) {
+        if (! $this->driver) {
             // Get driver configuration
-            $config = $this->config('drivers.' . $this->config('driver'), []);
+            $config = $this->config('drivers.'.$this->config('driver'), []);
 
             // Get driver class
             $driver = Arr::pull($config, 'class');
@@ -284,7 +308,7 @@ class Currency
     {
         if ($this->formatter === null && $this->config('formatter') !== null) {
             // Get formatter configuration
-            $config = $this->config('formatters.' . $this->config('formatter'), []);
+            $config = $this->config('formatters.'.$this->config('formatter'), []);
 
             // Get formatter class
             $class = Arr::pull($config, 'class');
@@ -314,7 +338,7 @@ class Currency
      */
     public function config($key = null, $default = null)
     {
-        if ($key === null) {
+        if (! $key) {
             return $this->config;
         }
 
@@ -333,6 +357,116 @@ class Currency
     protected function getCurrencyProp($code, $key, $default = null)
     {
         return Arr::get($this->getCurrency($code), $key, $default);
+    }
+
+    /**
+     * Update exchange rates from Yahoo.
+     *
+     * @return bool
+     */
+    protected function updateFromYahoo()
+    {
+        // Get Settings
+        $defaultCurrency = $this->config('default');
+
+        $data = [];
+
+        // Get all currencies
+        foreach ($this->getDriver()->allActive() as $code => $value) {
+            $data[] = "{$defaultCurrency}{$code}=X";
+        }
+
+        // Ask Yahoo for exchange rate
+        if ($data) {
+            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s='.implode(',', $data).'&f=sl1&e=.csv');
+
+            $lines = explode("\n", trim($content));
+
+            // Update each rate
+            foreach ($lines as $line) {
+                $code = substr($line, 4, 3);
+                $value = substr($line, 11, 6) * 1.00;
+
+                if ($value) {
+                    $this->getDriver()->update($code, [
+                        'exchange_rate' => $value,
+                    ]);
+                }
+            }
+
+            // Clear cache
+            $this->clearCache();
+
+            // Force the system to rebuild cache
+            $this->getCurrencies();
+        }
+
+        return true;
+    }
+
+    /**
+     * Update exchange rates from OpenExchangeRates.
+     *
+     * @return bool
+     */
+    protected function updateFromOpenExchangeRates()
+    {
+        if (!$api = $this->config('api_key')) {
+            return false;
+        }
+
+        // Get Settings
+        $defaultCurrency = $this->config('default');
+
+        // Make request
+        $content = json_decode($this->request("http://openexchangerates.org/api/latest.json?base={$defaultCurrency}&app_id={$api}"));
+
+        // Error getting content?
+        if (isset($content->error)) {
+            // TODO: Return the description of error ($content->description) maybe?
+            return false;
+        }
+
+        // Parse timestamp for DB
+        $timestamp = new DateTime(strtotime($content->timestamp));
+
+        // Update each rate
+        foreach ($content->rates as $code => $value) {
+            $this->getDriver()->update($code, [
+                'exchange_rate' => $value,
+                'updated_at' => $timestamp,
+            ]);
+        }
+
+        $this->clearCache();
+
+        return true;
+    }
+
+    /**
+     * Make a GET request to given URL.
+     *
+     * @param string $url
+     *
+     * @return mixed
+     */
+    protected function request($url)
+    {
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1");
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+        curl_setopt($ch, CURLOPT_MAXCONNECTS, 2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return $response;
     }
 
     /**
