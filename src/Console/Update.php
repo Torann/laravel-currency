@@ -43,7 +43,7 @@ class Update extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         if ($this->input->getOption('openexchangerates')) {
             if (!$api = $this->currency->config('api_key')) {

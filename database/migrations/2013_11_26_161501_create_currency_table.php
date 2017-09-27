@@ -27,9 +27,8 @@ class CreateCurrencyTable extends Migration
     public function up()
     {
         Schema::create($this->table_name, function ($table) {
-            $table->increments('id')->unsigned();
             $table->string('name');
-            $table->string('code', 10)->index();
+            $table->string('code', 10)->unique();
             $table->string('symbol', 25);
             $table->string('format', 50);
             $table->string('exchange_rate');
@@ -45,6 +44,6 @@ class CreateCurrencyTable extends Migration
      */
     public function down()
     {
-        Schema::drop($this->table_name);
+        Schema::dropIfExists($this->table_name);
     }
 }

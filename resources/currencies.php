@@ -263,7 +263,7 @@ return [
     'EUR' => [
         'name' => 'Euro',
         'symbol' => '€',
-        'format' => '1.0,00 €',
+        'format' => '1 0,00 €',
         'exchange_rate' => 0.00,
     ],
     'FJD' => [

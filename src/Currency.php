@@ -48,7 +48,7 @@ class Currency
      *
      * @var array
      */
-    protected $currencies_cache;
+    protected $active_cache;
 
     /**
      * Create a new instance.
@@ -74,6 +74,9 @@ class Currency
      */
     public function convert($amount, $from = null, $to = null, $format = true)
     {
+        $this->activateCurrencyIfNeeded($from);
+        $this->activateCurrencyIfNeeded($to);
+
         // Get currencies involved
         $from = $from ?: $this->config('default');
         $to = $to ?: $this->getUserCurrency();
@@ -83,7 +86,7 @@ class Currency
         $to_rate = $this->getCurrencyProp($to, 'exchange_rate');
 
         // Skip invalid to currency rates
-        if (!$to_rate || !$from_rate) {
+        if (! $to_rate || ! $from_rate) {
             return null;
         }
 
@@ -91,12 +94,35 @@ class Currency
         $value = $amount * $to_rate * (1 / $from_rate);
 
         // Should the result be formatted?
-        if ($format === true) {
+        if ($format) {
             return $this->format($value, $to);
         }
 
         // Return value
         return $value;
+    }
+
+    /**
+     * Active currency and update exchange rate if neeed.
+     *
+     * @param  string  $code
+     * @return void
+     *
+     * @throws \Exception
+     */
+    protected function activateCurrencyIfNeeded($code)
+    {
+        if (! $this->isValidCurrency($code)) {
+            throw new \Exception("Given currency is not valid: {$code}");
+        }
+
+        if ($this->hasCurrency($code)) {
+            return;
+        }
+
+        $this->getDriver()->activate($code);
+
+        $this->updateRates();
     }
 
     /**
@@ -160,7 +186,7 @@ class Currency
         }
 
         // Return value
-        return $negative . $value;
+        return $negative.$value;
     }
 
     /**
@@ -219,20 +245,7 @@ class Currency
     }
 
     /**
-     * Determine if the provided currency is active.
-     *
-     * @param string $code
-     *
-     * @return bool
-     */
-    public function isActive($code)
-    {
-        return $code && (bool) Arr::get($this->getCurrency($code), 'active', false);
-    }
-
-    /**
-     * Return the current currency if the
-     * one supplied is not valid.
+     * Return the current currency if the one supplied is not valid.
      *
      * @param string $code
      *
@@ -252,7 +265,7 @@ class Currency
      */
     public function getAllCurrencies()
     {
-        return include(__DIR__ . '/../resources/currencies.php');
+        return $this->getDriver()->all();
     }
 
     /**
@@ -262,30 +275,7 @@ class Currency
      */
     public function getCurrencies()
     {
-        if ($this->currencies_cache === null) {
-            if (config('app.debug', false) === true) {
-                $this->currencies_cache = $this->getDriver()->all();
-            }
-            else {
-                $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
-                    return $this->getDriver()->all();
-                });
-            }
-        }
-
-        return $this->currencies_cache;
-    }
-
-    /**
-     * Return all active currencies.
-     *
-     * @return array
-     */
-    public function getActiveCurrencies()
-    {
-        return array_filter($this->getCurrencies(), function($currency) {
-            return $currency['active'] == true;
-        });
+        return $this->getDriver()->allActive();
     }
 
     /**
@@ -295,9 +285,9 @@ class Currency
      */
     public function getDriver()
     {
-        if ($this->driver === null) {
+        if (! $this->driver) {
             // Get driver configuration
-            $config = $this->config('drivers.' . $this->config('driver'), []);
+            $config = $this->config('drivers.'.$this->config('driver'), []);
 
             // Get driver class
             $driver = Arr::pull($config, 'class');
@@ -318,7 +308,7 @@ class Currency
     {
         if ($this->formatter === null && $this->config('formatter') !== null) {
             // Get formatter configuration
-            $config = $this->config('formatters.' . $this->config('formatter'), []);
+            $config = $this->config('formatters.'.$this->config('formatter'), []);
 
             // Get formatter class
             $class = Arr::pull($config, 'class');
@@ -348,7 +338,7 @@ class Currency
      */
     public function config($key = null, $default = null)
     {
-        if ($key === null) {
+        if (! $key) {
             return $this->config;
         }
 
@@ -382,13 +372,13 @@ class Currency
         $data = [];
 
         // Get all currencies
-        foreach ($this->getDriver()->all() as $code => $value) {
+        foreach ($this->getDriver()->allActive() as $code => $value) {
             $data[] = "{$defaultCurrency}{$code}=X";
         }
 
         // Ask Yahoo for exchange rate
         if ($data) {
-            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
+            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s='.implode(',', $data).'&f=sl1&e=.csv');
 
             $lines = explode("\n", trim($content));
 

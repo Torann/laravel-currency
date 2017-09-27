@@ -59,23 +59,28 @@ class Database extends AbstractDriver
      */
     public function all()
     {
-        $collection = new Collection($this->database->table($this->config('table'))->get());
-
-        return $collection->keyBy('code')
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'code' => strtoupper($item->code),
-                    'symbol' => $item->symbol,
-                    'format' => $item->format,
-                    'exchange_rate' => $item->exchange_rate,
-                    'active' => $item->active,
-                    'created_at' => $item->updated_at,
-                    'updated_at' => $item->updated_at,
-                ];
+        return $this->database->table($this->config('table'))
+            ->get()
+            ->keyBy('code')
+            ->map(function($row) {
+                return (array) $row;
             })
-            ->all();
+            ->toArray();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function allActive()
+    {
+        return $this->database->table($this->config('table'))
+            ->where('active', 1)
+            ->get()
+            ->keyBy('code')
+            ->map(function($row) {
+                return (array) $row;
+            })
+            ->toArray();
     }
 
     /**
@@ -109,6 +114,22 @@ class Database extends AbstractDriver
         return $this->database->table($table)
             ->where('code', strtoupper($code))
             ->update($attributes);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function activate($code)
+    {
+        return $this->update($code, ['active' => true]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deactivate($code)
+    {
+        return $this->update($code, ['active' => false]);
     }
 
     /**
