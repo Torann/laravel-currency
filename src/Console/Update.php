@@ -13,7 +13,8 @@ class Update extends Command
      * @var string
      */
     protected $signature = 'currency:update
-                                {--o|openexchangerates : Get rates from OpenExchangeRates.org}';
+                                {--o|openexchangerates : Get rates from OpenExchangeRates.org}
+                                {--g|google : Get rates from Google Finance}';
 
     /**
      * The console command description.
@@ -45,7 +46,7 @@ class Update extends Command
      * @return void
      */
     public function fire()
-    {    
+    {
         $this->handle();
     }
 
@@ -67,12 +68,17 @@ class Update extends Command
             }
 
             // Get rates
-            $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+            return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
         }
-        else {
-            // Get rates
-            $this->updateFromYahoo($defaultCurrency);
+
+        if ($this->input->getOption('google')) {
+            // Get rates from google
+            return $this->updateFromGoogle($defaultCurrency);
         }
+
+        // Get rates
+        $this->updateFromYahoo($defaultCurrency);
+
     }
 
     private function updateFromYahoo($defaultCurrency)
@@ -109,6 +115,31 @@ class Update extends Command
         }
 
         $this->info('Complete');
+    }
+
+    private function updateFromGoogle($defaultCurrency)
+    {
+        $this->info('Updating currency exchange rates from finance.google.com...');
+
+        foreach ($this->currency->getDriver()->all() as $code => $value) {
+            // don't update the default currency, the value is always 1
+            if ($code === $defaultCurrency) {
+                continue;
+            }
+
+            $response = $this->request('http://finance.google.com/finance/converter?a=1&from=' . $defaultCurrency . '&to=' . $code);
+
+            if (\Illuminate\Support\Str::contains($response, 'bld>')) {
+                $data     = explode('bld>', $response);
+                $rate     = explode($code, $data[1])[0];
+                $this->currency->getDriver()->update($code, [
+                    'exchange_rate' => $rate,
+                ]);
+            } else {
+                $this->warn('Can\'t update rate for ' . $code);
+                continue;
+            }
+        }
     }
 
     private function updateFromOpenExchangeRates($defaultCurrency, $api)
