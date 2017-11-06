@@ -1,7 +1,7 @@
 {
     "name": "torann/currency",
     "description": "This provides Laravel 5 with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
-    "keywords": ["laravel", "currency", "money", "exchange rate", "yahoo finance", "OpenExchangeRates", "finance"],
+    "keywords": ["laravel", "currency", "money", "exchange rate", "OpenExchangeRates", "finance"],
 	"license": "BSD 2-Clause",
     "authors": [
         {
