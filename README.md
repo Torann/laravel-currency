@@ -1,4 +1,4 @@
-> **NOTE** Yahoo has discontinued their exchange rate server. So everyone will have to use OpenExchangeRates.org
+> **NOTE** Yahoo has discontinued their exchange rate service. So everyone will have to move to OpenExchangeRates.org
 
 # Currency for Laravel
 
