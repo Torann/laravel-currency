@@ -1,3 +1,5 @@
+> **NOTE** Yahoo has discontinued their exchange rate server. So everyone will have to use OpenExchangeRates.org
+
 # Currency for Laravel
 
 [![Latest Stable Version](https://poser.pugx.org/torann/currency/v/stable.png)](https://packagist.org/packages/torann/currency)
