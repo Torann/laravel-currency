@@ -59,58 +59,22 @@ class Update extends Command
         // Get Settings
         $defaultCurrency = $this->currency->config('default');
 
-        if ($this->input->getOption('openexchangerates')) {
-            if (!$api = $this->currency->config('api_key')) {
-                $this->error('An API key is needed from OpenExchangeRates.org to continue.');
+        if (!$api = $this->currency->config('api_key')) {
+            $this->error('An API key is needed from OpenExchangeRates.org to continue.');
 
-                return;
-            }
+            return;
+        }
 
-            // Get rates
-            $this->updateFromOpenExchangeRates($defaultCurrency, $api);
-        }
-        else {
-            // Get rates
-            $this->updateFromYahoo($defaultCurrency);
-        }
+        // Get rates
+        $this->updateFromOpenExchangeRates($defaultCurrency, $api);
     }
 
-    private function updateFromYahoo($defaultCurrency)
-    {
-        $this->comment('Updating currency exchange rates from Finance Yahoo...');
-
-        $data = [];
-
-        // Get all currencies
-        foreach ($this->currency->getDriver()->all() as $code => $value) {
-            $data[] = "{$defaultCurrency}{$code}=X";
-        }
-
-        // Ask Yahoo for exchange rate
-        if ($data) {
-            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
-
-            $lines = explode("\n", trim($content));
-
-            // Update each rate
-            foreach ($lines as $line) {
-                $code = substr($line, 4, 3);
-                $value = substr($line, 11, 6) * 1.00;
-
-                if ($value) {
-                    $this->currency->getDriver()->update($code, [
-                        'exchange_rate' => $value,
-                    ]);
-                }
-            }
-
-            // Clear old cache
-            $this->call('currency:cleanup');
-        }
-
-        $this->info('Complete');
-    }
-
+    /**
+     * Fetch rates from the API
+     *
+     * @param $defaultCurrency
+     * @param $api
+     */
     private function updateFromOpenExchangeRates($defaultCurrency, $api)
     {
         $this->info('Updating currency exchange rates from OpenExchangeRates.org...');
@@ -141,6 +105,13 @@ class Update extends Command
         $this->info('Update!');
     }
 
+    /**
+     * Make the request to the sever.
+     *
+     * @param $url
+     *
+     * @return string
+     */
     private function request($url)
     {
         $ch = curl_init($url);
