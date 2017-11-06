@@ -3,7 +3,6 @@
 namespace Torann\Currency\Console;
 
 use Illuminate\Support\Arr;
-use Torann\Currency\Currency;
 use Illuminate\Console\Command;
 
 class Manage extends Command
@@ -55,7 +54,7 @@ class Manage extends Command
      * @return void
      */
     public function fire()
-    {    
+    {
         $this->handle();
     }
 
@@ -147,7 +146,15 @@ class Manage extends Command
      */
     protected function getCurrencyArgument()
     {
-        return explode(',', preg_replace('/\s+/', '', $this->argument('currency')));
+        // Get the user entered value
+        $value = preg_replace('/\s+/', '', $this->argument('currency'));
+
+        // Return all currencies if requested
+        if ($value === 'all') {
+            return array_keys($this->currencies);
+        }
+
+        return explode(',', $value);
     }
 
     /**
