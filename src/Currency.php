@@ -87,7 +87,12 @@ class Currency
         }
 
         // Convert amount
-        $value = $amount * $to_rate * (1 / $from_rate);
+        if ($from === $to) {
+            $value = $amount;
+        }
+        else {
+            $value = ($amount * $to_rate) / $from_rate;
+        }
 
         // Should the result be formatted?
         if ($format === true) {
