@@ -90,7 +90,7 @@ class Update extends Command
         }
 
         // Parse timestamp for DB
-        $timestamp = new DateTime(strtotime($content->timestamp));
+        $timestamp = (new DateTime())->setTimestamp($content->timestamp);
 
         // Update each rate
         foreach ($content->rates as $code => $value) {
