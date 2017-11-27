@@ -813,9 +813,9 @@ return [
         'exchange_rate' => 0.00,
     ],
     'TRY' => [
-        'name' => 'New Turkish Lira',
+        'name' => 'Turkish Lira',
         'symbol' => 'TL',
-        'format' => '1,0.00 TL',
+        'format' => '₺1,0.00',
         'exchange_rate' => 0.00,
     ],
     'TTD' => [
