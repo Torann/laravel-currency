@@ -3,6 +3,7 @@
 namespace Torann\Currency\Console;
 
 use DateTime;
+use DateTimeZone;
 use Illuminate\Console\Command;
 
 class Update extends Command
@@ -12,8 +13,9 @@ class Update extends Command
      *
      * @var string
      */
-    protected $signature = 'currency:update
-                                {--o|openexchangerates : Get rates from OpenExchangeRates.org}';
+    protected $signature = 'currency:update {currency?}
+                                {--o|openexchangerates : Get rates from OpenExchangeRates.org}
+                                {--f|fixer : Get rates from Fixer}';
 
     /**
      * The console command description.
@@ -58,15 +60,64 @@ class Update extends Command
     {
         // Get Settings
         $defaultCurrency = $this->currency->config('default');
-
-        if (!$api = $this->currency->config('api_key')) {
-            $this->error('An API key is needed from OpenExchangeRates.org to continue.');
-
-            return;
-        }
-
+        
+        $source = config('currency.source');
+        
+        // Check options
+	    if ($this->input->getOption('openexchangerates')) {
+		    $source = "openexchangerates";
+	    } else if ($this->input->getOption('fixer')) {
+	    	$source = "fixer";
+	    }
+	    
         // Get rates
-        $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+	    if ($source === 'openexchangerates') {
+	    	
+	    	// Make sure the API key is set
+		    if (!$api = $this->currency->config('api_key')) {
+			    $this->error('An API key is needed from OpenExchangeRates.org to continue.');
+			    return;
+		    }
+		    
+		    $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+		    
+	    } else if ($source === 'fixer') {
+		    $this->updateFromFixer($defaultCurrency);
+	    } else {
+	    	$this->error('There is no source configured to update the currencies from.');
+	    }
+	    
+    }
+    
+    private function updateFromFixer($defaultCurrency)
+    {
+        $this->info('Updating currency exchange rates from Fixer.io...');
+        
+        $result = json_decode($this->request("http://api.fixer.io/latest?base={$defaultCurrency}"));
+	    
+	    if (isset($result->error)) {
+		    $this->error($result->description);
+		    return;
+	    }
+	    
+	    // As there's no timestamp, according to Fixer.io, it updates at around 4pm CET.
+	    // Hence why we're manually putting in the time here.
+	    $timestamp = new DateTime($result->date . ' 16:00:00', new DateTimeZone('CET'));
+	    
+	    // Update each rate
+	    foreach ($result->rates as $code => $value) {
+		    $this->currency->getDriver()->update($code, [
+			    'exchange_rate' => $value,
+			    'updated_at' => $timestamp,
+		    ]);
+	    }
+	
+	    // Fixer doesn't return the base rate as 1, hence we need to update it manually.
+	    $this->currency->getDriver()->update($defaultCurrency, [
+		    'exchange_rate' => 1,
+		    'updated_at' => $timestamp,
+	    ]);
+	    
     }
 
     /**

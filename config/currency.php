@@ -17,11 +17,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Source
+    |--------------------------------------------------------------------------
+    |
+    | Select which source to use to retrieve the rates
+    |
+    | Fixer                 http://fixer.io
+    | Open Exchange Rates   https://openexchangerates.org
+    |
+    | Supported: "fixer", "openexchangerates"
+    |
+    */
+
+    'source' => 'fixer',
+
+    /*
+    |--------------------------------------------------------------------------
     | API Key for OpenExchangeRates.org
     |--------------------------------------------------------------------------
     |
-    | Only required if you with to use the Open Exchange Rates api. You can
-    | always just use Yahoo, the current default.
+    | Only required if you with to use the Open Exchange Rates api.
     |
     */
 
