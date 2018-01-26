@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCurrencyTable extends Migration
+class AlterCurrencyTableAddUpdateColumn extends Migration
 {
     /**
      * Currencies table name
