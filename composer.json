@@ -24,5 +24,15 @@
         "psr-4": {
             "Torann\\Currency\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Torann\\Currency\\CurrencyServiceProvider"
+            ],
+            "aliases": {
+                "Currency": "Torann\\Currency\\Facades\\Currency"
+            }
+        }
     }
 }
