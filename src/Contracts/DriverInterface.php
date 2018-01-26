@@ -31,17 +31,18 @@ interface DriverInterface
      * @return mixed
      */
     public function find($code, $active = 1);
-
-    /**
-     * Update given currency.
-     *
-     * @param string   $code
-     * @param array    $attributes
-     * @param DateTime $timestamp
-     *
-     * @return int
-     */
-    public function update($code, array $attributes, DateTime $timestamp = null);
+	
+	/**
+	 * Update given currency.
+	 *
+	 * @param string $code
+	 * @param array $attributes
+	 * @param DateTime $timestamp
+	 * @param bool $auto Whether or not it's performed automatically
+	 *
+	 * @return int
+	 */
+    public function update($code, array $attributes, DateTime $timestamp = null, $auto = false);
 
     /**
      * Remove given currency from storage.
