@@ -4,6 +4,7 @@ namespace Torann\Currency\Console;
 
 use DateTime;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class Update extends Command
 {
@@ -130,13 +131,14 @@ class Update extends Command
 
             $response = $this->request('http://finance.google.com/finance/converter?a=1&from=' . $defaultCurrency . '&to=' . $code);
 
-            if (\Illuminate\Support\Str::contains($response, 'bld>')) {
+            if (Str::contains($response, 'bld>')) {
                 $data     = explode('bld>', $response);
                 $rate     = explode($code, $data[1])[0];
                 $this->currency->getDriver()->update($code, [
                     'exchange_rate' => $rate,
                 ]);
-            } else {
+            }
+            else {
                 $this->warn('Can\'t update rate for ' . $code);
                 continue;
             }
