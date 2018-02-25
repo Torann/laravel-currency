@@ -47,6 +47,7 @@ class Database extends AbstractDriver
             'format' => '',
             'exchange_rate' => 1,
             'active' => 0,
+            'auto_update' => 1,
             'created_at' => $created,
             'updated_at' => $created,
         ], $params);
@@ -97,7 +98,7 @@ class Database extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function update($code, array $attributes, DateTime $timestamp = null)
+    public function update($code, array $attributes, DateTime $timestamp = null, $auto = false)
     {
         $table = $this->config('table');
 
@@ -106,9 +107,17 @@ class Database extends AbstractDriver
             $attributes['updated_at'] = new DateTime('now');
         }
 
-        return $this->database->table($table)
-            ->where('code', strtoupper($code))
-            ->update($attributes);
+        //Only apply to those with auto update if it's automatically updating
+        if ($auto) {
+	        return $this->database->table($table)
+	                              ->where('code', strtoupper($code))
+				                  ->where('auto_update', 1)
+				                  ->update($attributes);
+        } else {
+	        return $this->database->table($table)
+	                              ->where('code', strtoupper($code))
+	                              ->update($attributes);
+        }
     }
 
     /**

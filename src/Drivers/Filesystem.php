@@ -54,6 +54,7 @@ class Filesystem extends AbstractDriver
             'format' => '',
             'exchange_rate' => 1,
             'active' => 0,
+            'auto_update' => 1,
             'created_at' => $created,
             'updated_at' => $created,
         ], $params);
@@ -95,7 +96,7 @@ class Filesystem extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function update($code, array $attributes, DateTime $timestamp = null)
+    public function update($code, array $attributes, DateTime $timestamp = null, $auto = false)
     {
         // Get blacklist path
         $path = $this->config('path');
@@ -114,7 +115,14 @@ class Filesystem extends AbstractDriver
         }
 
         // Merge values
-        $currencies[$code] = array_merge($currencies[$code], $attributes);
+	    if ($auto) {
+        	//If auto update disabled
+        	if ($currencies[$code]['auto_update']) {
+		        $currencies[$code] = array_merge($currencies[$code], $attributes);
+	        }
+	    } else {
+		    $currencies[ $code ] = array_merge($currencies[ $code ], $attributes);
+	    }
 
         return $this->filesystem->put($path, json_encode($currencies, JSON_PRETTY_PRINT));
     }
