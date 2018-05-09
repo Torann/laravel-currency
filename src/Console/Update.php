@@ -76,7 +76,6 @@ class Update extends Command
             // Get rates from OpenExchangeRates
             return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
         }
-
     }
 
     /**
@@ -124,7 +123,7 @@ class Update extends Command
     {
         $this->info('Updating currency exchange rates from finance.google.com...');
         foreach ($this->currency->getDriver()->all() as $code => $value) {
-            // don't update the default currency, the value is always 1
+            // Don't update the default currency, the value is always 1
             if ($code === $defaultCurrency) {
                 continue;
             }
@@ -132,8 +131,9 @@ class Update extends Command
             $response = $this->request('http://finance.google.com/finance/converter?a=1&from=' . $defaultCurrency . '&to=' . $code);
 
             if (Str::contains($response, 'bld>')) {
-                $data     = explode('bld>', $response);
-                $rate     = explode($code, $data[1])[0];
+                $data = explode('bld>', $response);
+                $rate = explode($code, $data[1])[0];
+                
                 $this->currency->getDriver()->update($code, [
                     'exchange_rate' => $rate,
                 ]);
