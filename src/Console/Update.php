@@ -128,12 +128,18 @@ class Update extends Command
                 continue;
             }
 
-            $response = $this->request('http://finance.google.com/finance/converter?a=1&from=' . $defaultCurrency . '&to=' . $code);
+            $convertionQuery = $defaultCurrency . '_' . $code;
+            $response = json_decode(
+                $this->request(
+                    'http://free.currencyconverterapi.com/api/v5/convert?q=' .
+                    $convertionQuery .
+                    '&compact=y'
+                ), true
+            );
 
-            if (Str::contains($response, 'bld>')) {
-                $data = explode('bld>', $response);
-                $rate = explode($code, $data[1])[0];
-                
+            if (!empty($response)) {
+                $rate = $response[$convertionQuery]['val'];
+
                 $this->currency->getDriver()->update($code, [
                     'exchange_rate' => $rate,
                 ]);
