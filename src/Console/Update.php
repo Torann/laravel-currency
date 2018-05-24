@@ -148,7 +148,7 @@ class Update extends Command
             $this->info('Updating ' . $code . ' to ' . ($baseRate / $rate));
             $this->currency->getDriver()->update($code, [
                 'exchange_rate' => $baseRate / $rate,
-                'updated_at' => strtotime($parsedResponse->timestamp)
+                'updated_at' => date('Y-m-d h:i:s', $parsedResponse->timestamp)
             ]);
         }
     }
