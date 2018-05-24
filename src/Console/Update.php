@@ -62,8 +62,14 @@ class Update extends Command
         $defaultCurrency = $this->currency->config('default');
 
         if ($this->input->getOption('fixer')) {
+            $api = $this->currency->config('api_key');
+            if (!$api = $this->currency->config('api_key')) {
+                $this->error('An API key is needed from fixer.io to continue.');
+                return;
+            }
             // Get rates from fixer
-            return $this->updateFromFixer($defaultCurrency);
+            $this->updateFromFixer($defaultCurrency, $api);
+            return;
         }
 
         if ($this->input->getOption('openexchangerates')) {
@@ -74,7 +80,8 @@ class Update extends Command
             }
 
             // Get rates from OpenExchangeRates
-            return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+            $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+            return;
         }
     }
 
@@ -114,14 +121,20 @@ class Update extends Command
         $this->info('Update!');
     }
 
-    public function updateFromFixer($defaultCurrency)
+    /**
+     * Fetch rates from Fixer.io
+     *
+     * @param $defaultCurrency
+     * @param $api
+     */
+    public function updateFromFixer($defaultCurrency, $api)
     {
         $this->info('Updating currency exchange rates from fixer.io...');
 
         // first thing we need to do is exchange our base currency into EUR which is the only one we get for free
         if ($defaultCurrency !== 'EUR') {
             $response = $this->request(
-                'http://data.fixer.io/api/latest?access_key=' . config('currency.api_key')
+                'http://data.fixer.io/api/latest?access_key=' . $api
                 . '&base='    . 'EUR'
                 . '&symbols=' . $defaultCurrency
             );
