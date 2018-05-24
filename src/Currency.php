@@ -307,6 +307,7 @@ class Currency
     public function clearCache()
     {
         $this->cache->forget('torann.currency');
+        $this->currencies_cache = null;
     }
 
     /**
