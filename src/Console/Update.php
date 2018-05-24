@@ -127,7 +127,7 @@ class Update extends Command
      * @param $defaultCurrency
      * @param $api
      */
-    public function updateFromFixer($defaultCurrency, $api)
+    private function updateFromFixer($defaultCurrency, $api)
     {
         $this->info('Updating currency exchange rates from fixer.io...');
 
