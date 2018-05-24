@@ -15,7 +15,7 @@ class Update extends Command
      */
     protected $signature = 'currency:update
                                 {--o|openexchangerates : Get rates from OpenExchangeRates.org}
-                                {--g|google : Get rates from Google Finance}';
+                                {--f|fixer : Get rates from fixer.io}';
 
     /**
      * The console command description.
@@ -61,9 +61,9 @@ class Update extends Command
         // Get Settings
         $defaultCurrency = $this->currency->config('default');
 
-        if ($this->input->getOption('google')) {
-            // Get rates from google
-            return $this->updateFromGoogle($defaultCurrency);
+        if ($this->input->getOption('fixer')) {
+            // Get rates from fixer
+            return $this->updateFromFixer($defaultCurrency);
         }
 
         if ($this->input->getOption('openexchangerates')) {
@@ -76,7 +76,6 @@ class Update extends Command
             // Get rates from OpenExchangeRates
             return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
         }
-
     }
 
     /**
@@ -100,7 +99,7 @@ class Update extends Command
         }
 
         // Parse timestamp for DB
-        $timestamp = new DateTime(strtotime($content->timestamp));
+        $timestamp = (new DateTime())->setTimestamp($content->timestamp);
 
         // Update each rate
         foreach ($content->rates as $code => $value) {
@@ -115,33 +114,42 @@ class Update extends Command
         $this->info('Update!');
     }
 
-    /**
-     * Fetch rates from Google Finance
-     *
-     * @param $defaultCurrency
-     */
-    private function updateFromGoogle($defaultCurrency)
+    public function updateFromFixer($defaultCurrency)
     {
-        $this->info('Updating currency exchange rates from finance.google.com...');
-        foreach ($this->currency->getDriver()->all() as $code => $value) {
-            // don't update the default currency, the value is always 1
-            if ($code === $defaultCurrency) {
-                continue;
-            }
+        $this->info('Updating currency exchange rates from fixer.io...');
 
-            $response = $this->request('http://finance.google.com/finance/converter?a=1&from=' . $defaultCurrency . '&to=' . $code);
+        // first thing we need to do is exchange our base currency into EUR which is the only one we get for free
+        if ($defaultCurrency !== 'EUR') {
+            $response = $this->request(
+                'http://data.fixer.io/api/latest?access_key=' . config('currency.api_key')
+                . '&base='    . 'EUR'
+                . '&symbols=' . $defaultCurrency
+            );
+            $baseRate = json_decode($response)->rates->$defaultCurrency;
+        }
 
-            if (Str::contains($response, 'bld>')) {
-                $data     = explode('bld>', $response);
-                $rate     = explode($code, $data[1])[0];
-                $this->currency->getDriver()->update($code, [
-                    'exchange_rate' => $rate,
-                ]);
-            }
-            else {
-                $this->warn('Can\'t update rate for ' . $code);
-                continue;
-            }
+        $response = $this->request(
+            'http://data.fixer.io/api/latest?access_key=' . config('currency.api_key')
+            . '&base='    . 'EUR'
+            . '&symbols=' . implode(',', array_keys($this->currency->getDriver()->all()))
+        );
+
+        $parsedResponse = json_decode($response);
+        if ($parsedResponse === null) {
+            $this->error('Received invalid response!');
+            return;
+        }
+        if ($parsedResponse->success === false) {
+            $this->error('Unable to get rates: ' . $parsedResponse->error->type);
+            return;
+        }
+
+        foreach ($parsedResponse->rates as $code => $rate) {
+            $this->info('Updating ' . $code . ' to ' . ($baseRate / $rate));
+            $this->currency->getDriver()->update($code, [
+                'exchange_rate' => $baseRate / $rate,
+                'updated_at' => strtotime($parsedResponse->timestamp)
+            ]);
         }
     }
 
