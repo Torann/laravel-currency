@@ -167,6 +167,38 @@ class Update extends Command
     }
 
     /**
+     * Fetch rates from Google Finance
+     *
+     * @param $defaultCurrency
+     */
+    private function updateFromGoogle($defaultCurrency)
+    {
+        $this->info('Updating currency exchange rates from finance.google.com...');
+        foreach ($this->currency->getDriver()->all() as $code => $value) {
+            // Don't update the default currency, the value is always 1
+            if ($code === $defaultCurrency) {
+                continue;
+            }
+
+            $response = $this->request('http://www.google.com/finance?a=1&from=' . $defaultCurrency . '&to=' . $code);
+
+            if (Str::contains($response, 'bld>')) {
+                $data = explode('bld>', $response);
+                $rate = explode($code, $data[1])[0];
+
+                $this->currency->getDriver()->update($code, [
+                    'exchange_rate' => $rate,
+                ]);
+            }
+            else {
+                $this->warn('Can\'t update rate for ' . $code);
+                $this->warn($response);
+                continue;
+            }
+        }
+    }
+
+    /**
      * Make the request to the sever.
      *
      * @param $url
