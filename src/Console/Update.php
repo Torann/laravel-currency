@@ -160,7 +160,7 @@ class Update extends Command
         foreach ($parsedResponse->rates as $code => $rate) {
             $this->info('Updating ' . $code . ' to ' . ($baseRate / $rate));
             $this->currency->getDriver()->update($code, [
-                'exchange_rate' => $baseRate / $rate,
+                'exchange_rate' => $rate / $baseRate,
                 'updated_at' => date('Y-m-d h:i:s', $parsedResponse->timestamp)
             ]);
         }
