@@ -69,7 +69,7 @@ class Currency
      * @param string $to
      * @param bool   $format
      *
-     * @return string
+     * @return string|null
      */
     public function convert($amount, $from = null, $to = null, $format = true)
     {
@@ -86,12 +86,16 @@ class Currency
             return null;
         }
 
-        // Convert amount
-        if ($from === $to) {
-            $value = $amount;
-        }
-        else {
-            $value = ($amount * $to_rate) / $from_rate;
+        try {
+            // Convert amount
+            if ($from === $to) {
+                $value = $amount;
+            } else {
+                $value = ($amount * $to_rate) / $from_rate;
+            }
+        } catch (\Exception $e) {
+            // Prevent invalid conversion or division by zero errors
+            return null;
         }
 
         // Should the result be formatted?
