@@ -5,6 +5,7 @@ namespace Torann\Currency\Drivers;
 use DateTime;
 use Illuminate\Support\Collection;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\Schema;
 
 class Database extends AbstractDriver
 {
@@ -48,8 +49,14 @@ class Database extends AbstractDriver
             'exchange_rate' => 1,
             'active' => 0,
             'created_at' => $created,
-            'updated_at' => $created,
+            'updated_at' => $created
         ], $params);
+
+        if (Schema::hasColumn($this->config('table'), 'deleted_at')) {
+            $params = array_merge([
+                'deleted_at' => null
+            ], $params);
+        }
 
         return $this->database->table($this->config('table'))->insert($params);
     }
@@ -59,7 +66,13 @@ class Database extends AbstractDriver
      */
     public function all()
     {
-        $collection = new Collection($this->database->table($this->config('table'))->get());
+        $table = $this->database->table($this->config('table'));
+
+        if (Schema::hasColumn($this->config('table'), 'deleted_at')) {
+            $collection = new Collection($table->whereNull('deleted_at')->get());
+        } else {
+            $collection = new Collection($this->database->table($this->config('table'))->get());
+        }
 
         return $collection->keyBy('code')
             ->map(function ($item) {
@@ -72,7 +85,7 @@ class Database extends AbstractDriver
                     'exchange_rate' => $item->exchange_rate,
                     'active' => $item->active,
                     'created_at' => $item->updated_at,
-                    'updated_at' => $item->updated_at,
+                    'updated_at' => $item->updated_at
                 ];
             })
             ->all();
@@ -85,6 +98,10 @@ class Database extends AbstractDriver
     {
         $query = $this->database->table($this->config('table'))
             ->where('code', strtoupper($code));
+
+        if (Schema::hasColumn($this->config('table'), 'deleted_at')) {
+            $query->whereNull('deleted_at');
+        }
 
         // Make active optional
         if (is_null($active) === false) {
