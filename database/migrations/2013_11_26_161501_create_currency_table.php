@@ -35,6 +35,7 @@ class CreateCurrencyTable extends Migration
             $table->string('exchange_rate');
             $table->boolean('active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
