@@ -34,7 +34,7 @@ class Database extends AbstractDriver
     public function create(array $params)
     {
         // Ensure the currency doesn't already exist
-        if ($this->find($params['code'], null) !== null) {
+        if ($this->find($params['code'], null, true) !== null) {
             return 'exists';
         }
 
@@ -94,12 +94,12 @@ class Database extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function find($code, $active = 1)
+    public function find($code, $active = 1, $strict = false)
     {
         $query = $this->database->table($this->config('table'))
             ->where('code', strtoupper($code));
 
-        if (Schema::hasColumn($this->config('table'), 'deleted_at')) {
+        if (!$strict && Schema::hasColumn($this->config('table'), 'deleted_at')) {
             $query->whereNull('deleted_at');
         }
 
