@@ -94,12 +94,12 @@ class Database extends AbstractDriver
     /**
      * {@inheritdoc}
      */
-    public function find($code, $active = 1, $strict = false)
+    public function find($code, $active = 1, $ignoreDeleted = false)
     {
         $query = $this->database->table($this->config('table'))
             ->where('code', strtoupper($code));
 
-        if (!$strict && Schema::hasColumn($this->config('table'), 'deleted_at')) {
+        if (!$ignoreDeleted && Schema::hasColumn($this->config('table'), 'deleted_at')) {
             $query->whereNull('deleted_at');
         }
 
