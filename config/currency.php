@@ -106,7 +106,7 @@ return [
     |
     */
 
-    'cache_driver' =>  env('CURRENCY_CACHE_DRIVER'),
+    'cache_driver' => env('CURRENCY_CACHE_DRIVER'),
 
     /*
     |--------------------------------------------------------------------------
