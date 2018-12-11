@@ -3,6 +3,7 @@
 namespace Torann\Currency\Sources;
 
 use \DateTime;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Torann\Currency\Contracts\Source as SourceContract;
 
@@ -139,10 +140,7 @@ abstract class Source implements SourceContract
      */
     public function name()
     {
-        $segments = explode('\\', get_class($this));
-        $className = end($segments);
-
-        return mb_strtolower(str_replace('Source', '', $className));
+        return Str::snake(str_replace('Source', '', class_basename($this)));
     }
 
     /**
