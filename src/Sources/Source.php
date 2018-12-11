@@ -140,7 +140,13 @@ abstract class Source implements SourceContract
      */
     public function name()
     {
-        return Str::snake(str_replace('Source', '', class_basename($this)));
+        $className = class_basename($this);
+
+        if (substr($className, -6) === 'Source') {
+            $className = substr($className, 0, -6);
+        }
+
+        return Str::snake($className);
     }
 
     /**
