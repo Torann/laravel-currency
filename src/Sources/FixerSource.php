@@ -28,7 +28,7 @@ class FixerSource extends Source implements SourceContract
     public function fetch()
     {
         $response = json_decode(
-            $this->request($url = $this->baseUrl."/latest?".http_build_query($this->queryParameters())
+            $this->request($this->baseUrl."/latest?".http_build_query($this->queryParameters())
         ), true);
 
         if (isset($response['error']['code'])) {
