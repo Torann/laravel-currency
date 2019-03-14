@@ -17,12 +17,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Source
+    | Default Currency Rates Source
     |--------------------------------------------------------------------------
     |
-    | @todo Describe sources...
+    | You could choose a preferred source to get actual exchange rates for
+    | your currencies list. By default you could use a default free-based source.
     |
-    | Supported: "exchangeratesapi", "fixer", "currencylayer", "openexchangerates"
+    | Supported: "currencylayer", "exchangeratesapi", "fixer", "openexchangerates"
     |
     */
 
@@ -33,7 +34,7 @@ return [
     | Sources Configuration
     |--------------------------------------------------------------------------
     |
-    | Sources "fixer", "currencylayer" and "openexchangerates" are required
+    | Sources like "fixer", "currencylayer" and "openexchangerates" are required
     | to have API token keys. You can always just use "exchangeratesapi" source,
     | the default source, but it has limited supported currencies list.
     |
@@ -96,7 +97,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Storage Driver
+    | Default Cache Driver
     |--------------------------------------------------------------------------
     |
     | Here you may specify the default cache driver that should be used
