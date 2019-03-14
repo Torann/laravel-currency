@@ -2,11 +2,11 @@
 
 namespace Torann\Currency\Sources;
 
-use Torann\Currency\Contracts\Source as SourceContract;
+use Torann\Currency\Contracts\SourceInterface;
 use Torann\Currency\Exceptions\InvalidArgumentException;
 use Torann\Currency\Exceptions\ConnectionFailedException;
 
-class ExchangeratesapiSource extends Source implements SourceContract
+class ExchangeratesapiSource extends Source implements SourceInterface
 {
     /**
      * Base URL of external API service.
@@ -25,27 +25,21 @@ class ExchangeratesapiSource extends Source implements SourceContract
      */
     public function fetch()
     {
-        $response = json_decode(
+        $response = $this->responseToArray(
             $this->request($this->baseUrl."/latest?".http_build_query($this->queryParameters())
-        ), true);
+        ));
 
         if (isset($response['error'])) {
-            if (str_contains($response['error'], 'not supported')) {
-                throw InvalidArgumentException::currencyNotSupported($this->name(), $this->defaultCurrency);
-            }
-
-            if (str_contains($response['error'], 'invalid')) {
-                throw InvalidArgumentException::currencyNotSupported($this->name());
-            }
+            $this->handleErrors($response);
         }
 
-        if (! $response || ! isset($response['rates'])) {
-            throw ConnectionFailedException::source($this->name());
-        }
+        if (isset($response['rates'])) {
+            return collect($response['rates'])->mapWithKeys(function ($rate, $currencyCode) {
+                return $this->formatRate($currencyCode, $rate);
+            })->except($this->defaultCurrency)->all();
+        };
 
-        return collect($response['rates'])->mapWithKeys(function ($rate, $currencyCode) {
-            return $this->formatRate($currencyCode, $rate);
-        })->except($this->defaultCurrency)->all();
+        throw ConnectionFailedException::source($this->name());
     }
 
     /**
@@ -57,7 +51,27 @@ class ExchangeratesapiSource extends Source implements SourceContract
     {
         return [
             'base' => $this->defaultCurrency,
-            'symbols' => implode(',', $this->currencies()),
+            'currencies' => collect($this->currencies())->implode(','),
         ];
+    }
+
+    /**
+     * Throw an exception if response has error.
+     *
+     * @param  array  $response
+     * @return void
+     *
+     * @throws \Torann\Currency\Exceptions\LimitationException
+     * @throws \Torann\Currency\Exceptions\InvalidArgumentException
+     */
+    protected function handleErrors($response)
+    {
+        if (str_contains($response['error'], 'not supported')) {
+            throw InvalidArgumentException::currencyNotSupported($this->name(), $this->defaultCurrency);
+        }
+
+        if (str_contains($response['error'], 'invalid')) {
+            throw InvalidArgumentException::currencyNotSupported($this->name());
+        }
     }
 }

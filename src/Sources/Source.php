@@ -3,11 +3,12 @@
 namespace Torann\Currency\Sources;
 
 use \DateTime;
+use \DateTimeInterface;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
-use Torann\Currency\Contracts\Source as SourceContract;
+use Torann\Currency\Contracts\SourceInterface;
+use Torann\Currency\Exceptions\InvalidArgumentException;
 
-abstract class Source implements SourceContract
+abstract class Source implements SourceInterface
 {
     /**
      * The Currency instance.
@@ -41,6 +42,8 @@ abstract class Source implements SourceContract
      * Create an instance of source.
      *
      * @return void
+     *
+     * @throws \Torann\Currency\Exceptions\InvalidArgumentException
      */
     public function __construct()
     {
@@ -48,14 +51,26 @@ abstract class Source implements SourceContract
 
         $this->baseUrl = rtrim($this->baseUrl, '/');
 
+        $this->setDefaultCurrency();
+
+        if ($this->mustHaveAccessKey()) {
+            $this->setAccessKey();
+        }
+    }
+
+    /**
+     * Set a default currency.
+     *
+     * @return void
+     *
+     * @throws \Torann\Currency\Exceptions\InvalidArgumentException
+     */
+    protected function setDefaultCurrency()
+    {
         $this->defaultCurrency = config('currency.default');
 
         if (! $this->defaultCurrency) {
             throw new InvalidArgumentException("Currency [{$this->defaultCurrency}] is not defined.");
-        }
-
-        if ($this->mustHaveAccessKey()) {
-            $this->setAccessKey();
         }
     }
 
@@ -66,24 +81,22 @@ abstract class Source implements SourceContract
      */
     protected function mustHaveAccessKey()
     {
-        return array_key_exists(
-            'key', config("currency.sources.{$this->name()}", [])
-        );
+        return array_key_exists('key', config("currency.sources.{$this->name()}", []));
     }
 
     /**
      * Set the access key if necessary.
      *
      * @return void
+     *
+     * @throws \Torann\Currency\Exceptions\InvalidArgumentException
      */
     protected function setAccessKey()
     {
         $this->accessKey = config("currency.sources.{$this->name()}.key");
 
         if (! $this->accessKey) {
-            throw new InvalidArgumentException(
-                "API key is required for [{$this->name()}] source."
-            );
+            throw new InvalidArgumentException("API key is required for [{$this->name()}] source.");
         }
     }
 
@@ -101,13 +114,15 @@ abstract class Source implements SourceContract
      */
     protected function currencies()
     {
-        $currencies = array_map(function ($currency) {
-            return $currency['code'];
-        }, $this->currency->getDriver()->all());
-
-        return array_values(array_filter($currencies, function ($currency) {
-            return $currency !== $this->defaultCurrency;
-        }));
+        return collect($this->currency->getDriver()->all())
+            ->reject(function ($currency) {
+                return $currency['code'] === $this->defaultCurrency;
+            })
+            ->map(function ($currency) {
+                return $currency['code'];
+            })
+            ->values()
+            ->all();
     }
 
     /**
@@ -115,19 +130,19 @@ abstract class Source implements SourceContract
      *
      * @param  string  $currencyCode
      * @param  mixed  $rate
-     * @param  \DateTime|null  $updatedAt
+     * @param  \DateTimeInterface|null  $updatedAt
      * @return array
      *
      * @throws \Exception
      */
-    protected function formatRate($currencyCode, $rate, DateTime $updatedAt = null)
+    protected function formatRate($currencyCode, $rate, DateTimeInterface $updatedAt = null)
     {
         $updatedAt = $updatedAt ?: new DateTime('now');
 
         return [
             $currencyCode => [
                 'code' => $currencyCode,
-                'rate' => (float) $rate,
+                'rate' => $rate,
                 'updated_at' => $updatedAt->format('Y-m-d H:i:s'),
             ],
         ];
@@ -172,5 +187,16 @@ abstract class Source implements SourceContract
         curl_close($ch);
 
         return $response;
+    }
+
+    /**
+     * Parse the response to array.
+     *
+     * @param  mixed  $response
+     * @return array
+     */
+    protected function responseToArray($response)
+    {
+        return json_decode($response, true);
     }
 }

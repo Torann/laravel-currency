@@ -23,7 +23,7 @@ class SourceManager extends Manager
      */
     public function update()
     {
-        (new CurrencyUpdater($this))->update();
+        (new CurrencyRatesUpdater($this))->update();
     }
 
     /**

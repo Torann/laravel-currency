@@ -4,9 +4,9 @@ namespace Torann\Currency\Exceptions;
 
 class InvalidArgumentException extends \InvalidArgumentException
 {
-    public static function invalidApiKey()
+    public static function invalidApiKey($source)
     {
-        return new static("An invalid API Key was specified.");
+        return new static("An invalid API Key was specified for [{$source}] source.");
     }
 
     public static function currencyNotSupported($source, $currency = null)

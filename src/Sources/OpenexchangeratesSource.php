@@ -3,11 +3,11 @@
 namespace Torann\Currency\Sources;
 
 use \DateTime;
-use Torann\Currency\Contracts\Source as SourceContract;
+use Torann\Currency\Contracts\SourceInterface;
 use Torann\Currency\Exceptions\InvalidArgumentException;
 use Torann\Currency\Exceptions\ConnectionFailedException;
 
-class OpenexchangeratesSource extends Source implements SourceContract
+class OpenexchangeratesSource extends Source implements SourceInterface
 {
     /**
      * Base URL of external API service.
@@ -22,29 +22,28 @@ class OpenexchangeratesSource extends Source implements SourceContract
      * @return array
      *
      * @throws \Exception
-     * @throws \Torann\Currency\Exceptions\LimitationException
      * @throws \Torann\Currency\Exceptions\InvalidArgumentException
      * @throws \Torann\Currency\Exceptions\ConnectionFailedException
      */
     public function fetch()
     {
-        $response = json_decode(
+        $response = $this->responseToArray(
             $this->request($this->baseUrl."/latest.json?".http_build_query($this->queryParameters())
-        ), true);
+        ));
 
         if (isset($response['error'])) {
-            throw new InvalidArgumentException($response['description']);
+            $this->handleErrors($response);
         }
 
-        if (! $response || ! isset($response['rates'])) {
-            throw ConnectionFailedException::source($this->name());
+        if (isset($response['rates'])) {
+            $updatedAt = (new DateTime)->setTimestamp($response['timestamp']);
+
+            return collect($response['rates'])->mapWithKeys(function ($rate, $currencyCode) use ($updatedAt) {
+                return $this->formatRate($currencyCode, $rate, $updatedAt);
+            })->except($this->defaultCurrency)->all();
         }
 
-        $updatedAt = (new DateTime)->setTimestamp($response['timestamp']);
-
-        return collect($response['rates'])->mapWithKeys(function ($rate, $currencyCode) use ($updatedAt) {
-            return $this->formatRate($currencyCode, $rate, $updatedAt);
-        })->except($this->defaultCurrency)->all();
+        throw ConnectionFailedException::source($this->name());
     }
 
     /**
@@ -57,7 +56,20 @@ class OpenexchangeratesSource extends Source implements SourceContract
         return [
             'app_id' => $this->accessKey,
             'base' => $this->defaultCurrency,
-            'symbols' => implode(',', $this->currencies()),
+            'symbols' => collect($this->currencies())->implode(','),
         ];
+    }
+
+    /**
+     * Throw an exception if response has error.
+     *
+     * @param  array  $response
+     * @return void
+     *
+     * @throws \Torann\Currency\Exceptions\InvalidArgumentException
+     */
+    protected function handleErrors(array $response)
+    {
+        throw new InvalidArgumentException($response['description']);
     }
 }

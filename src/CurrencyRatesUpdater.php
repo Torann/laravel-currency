@@ -2,7 +2,7 @@
 
 namespace Torann\Currency;
 
-class CurrencyUpdater
+class CurrencyRatesUpdater
 {
     /**
      * The source manager instance.
@@ -41,14 +41,14 @@ class CurrencyUpdater
         foreach ($this->fetchRates() as $code => $currency) {
             $this->updateRateFor($code, $currency['rate'], $currency['updated_at']);
 
-            $this->currency->clearCache();
+            $this->clearCache();
         }
     }
 
     /**
      * Fetch the exchange rates.
      *
-     * @return mixed
+     * @return array
      */
     protected function fetchRates()
     {
@@ -59,7 +59,7 @@ class CurrencyUpdater
      * Update rate.
      *
      * @param  string  $code
-     * @param  float  $rate
+     * @param  mixed  $rate
      * @param  \DateTimeInterface|string  $updatedAt
      * @return int
      */
@@ -69,5 +69,15 @@ class CurrencyUpdater
             'exchange_rate' => $rate,
             'updated_at' => $updatedAt,
         ]);
+    }
+
+    /**
+     * Clear the currency cache.
+     *
+     * @return void
+     */
+    protected function clearCache()
+    {
+        $this->currency->clearCache();
     }
 }

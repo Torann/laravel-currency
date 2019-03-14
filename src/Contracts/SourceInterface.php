@@ -2,7 +2,7 @@
 
 namespace Torann\Currency\Contracts;
 
-interface Source
+interface SourceInterface
 {
     /**
      * Fetch the exchange rates for the default currency.
