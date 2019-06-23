@@ -716,10 +716,10 @@ return [
         'format' => '₨1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'SDD' => [
-        'name' => 'Sudanese Dinar',
-        'symbol' => 'LSd',
-        'format' => '1,0.00LSd',
+    'SDG' => [
+        'name' => 'Sudanese Pound',
+        'symbol' => 'SDG',
+        'format' => '1,0.00 SDG',
         'exchange_rate' => 0.00,
     ],
     'SEK' => [
