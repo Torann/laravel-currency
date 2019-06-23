@@ -718,8 +718,8 @@ return [
     ],
     'SDG' => [
         'name' => 'Sudanese Pound',
-        'symbol' => 'SDG',
-        'format' => '1,0.00 SDG',
+        'symbol' => 'ج.س',
+        'format' => '1,0.00 ج.س',
         'exchange_rate' => 0.00,
     ],
     'SEK' => [
