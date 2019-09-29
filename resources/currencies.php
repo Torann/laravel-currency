@@ -536,7 +536,7 @@ return [
         'format' => 'MOP$1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'MRO' => [
+    'MRU' => [
         'name' => 'Mauritania, Ouguiya',
         'symbol' => 'UM',
         'format' => '1,0.00UM',
@@ -716,10 +716,10 @@ return [
         'format' => '₨1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'SDD' => [
-        'name' => 'Sudanese Dinar',
-        'symbol' => 'LSd',
-        'format' => '1,0.00LSd',
+    'SDG' => [
+        'name' => 'Sudanese Pound',
+        'symbol' => 'ج.س',
+        'format' => '1,0.00 Sd',
         'exchange_rate' => 0.00,
     ],
     'SEK' => [
@@ -758,7 +758,7 @@ return [
         'format' => '$1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'STD' => [
+    'STN' => [
         'name' => 'Sao Tome and Principe, Dobra',
         'symbol' => 'Db',
         'format' => 'Db1,0.00',
