@@ -140,7 +140,7 @@ return [
         'format' => 'P1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'BYR' => [
+    'BYN' => [
         'name' => 'Belarussian Ruble',
         'symbol' => 'р.',
         'format' => '1 0,00 р.',
