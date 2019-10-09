@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/support": "~5.1",
-        "illuminate/cache": "~5.1"
+        "illuminate/support": "~5.1|~6",
+        "illuminate/cache": "~5.1|~6"
     },
     "suggest": {
         "illuminate/database": "Allows for storing of currencies in the database"
