@@ -13,19 +13,48 @@ return [
     |
     */
 
-    'default' => 'USD',
+    'default' => env('CURRENCY', 'USD'),
 
     /*
     |--------------------------------------------------------------------------
-    | API Key for OpenExchangeRates.org
+    | Default Currency Rates Source
     |--------------------------------------------------------------------------
     |
-    | Only required if you with to use the Open Exchange Rates api. You can
-    | always just use Yahoo, the current default.
+    | You could choose a preferred source to get actual exchange rates for
+    | your currencies list. By default you could use a default free-based source.
+    |
+    | Supported: "currencylayer", "exchangeratesapi", "fixer", "openexchangerates"
     |
     */
 
-    'api_key' => '',
+    'source' => env('CURRENCY_SOURCE', 'exchangeratesapi'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sources Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Sources like "fixer", "currencylayer" and "openexchangerates" are required
+    | to have API token keys. You can always just use "exchangeratesapi" source,
+    | the default source, but it has limited supported currencies list.
+    |
+    */
+
+    'sources' => [
+
+        'fixer' => [
+            'key' => env('CURRENCY_FIXER_KEY'),
+        ],
+
+        'currencylayer' => [
+            'key' => env('CURRENCY_CURRENCYLAYER_KEY'),
+        ],
+
+        'openexchangerates' => [
+            'key' => env('CURRENCY_OPENEXCHANGERATES_KEY'),
+        ],
+
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -39,21 +68,7 @@ return [
     |
     */
 
-    'driver' => 'database',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Default Storage Driver
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the default cache driver that should be used
-    | by the framework.
-    |
-    | Supported: all cache drivers supported by Laravel
-    |
-    */
-
-    'cache_driver' => null,
+    'driver' => env('CURRENCY_DRIVER', 'database'),
 
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +94,20 @@ return [
         ],
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Cache Driver
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default cache driver that should be used
+    | by the framework.
+    |
+    | Supported: all cache drivers supported by Laravel
+    |
+    */
+
+    'cache_driver' => env('CURRENCY_CACHE_DRIVER'),
 
     /*
     |--------------------------------------------------------------------------
