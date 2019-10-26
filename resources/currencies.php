@@ -140,7 +140,7 @@ return [
         'format' => 'P1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'BYR' => [
+    'BYN' => [
         'name' => 'Belarussian Ruble',
         'symbol' => 'р.',
         'format' => '1 0,00 р.',
@@ -306,6 +306,12 @@ return [
         'name' => 'Gambia, Dalasi',
         'symbol' => 'D',
         'format' => '1,0.00D',
+        'exchange_rate' => 0.00,
+    ],
+    'GNF' => [
+        'name' => 'Guinean franc',
+        'symbol' => 'FG',
+        'format' => '1,0.00FG',
         'exchange_rate' => 0.00,
     ],
     'GTQ' => [
@@ -536,7 +542,7 @@ return [
         'format' => 'MOP$1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'MRO' => [
+    'MRU' => [
         'name' => 'Mauritania, Ouguiya',
         'symbol' => 'UM',
         'format' => '1,0.00UM',
@@ -716,10 +722,10 @@ return [
         'format' => '₨1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'SDD' => [
-        'name' => 'Sudanese Dinar',
-        'symbol' => 'LSd',
-        'format' => '1,0.00LSd',
+    'SDG' => [
+        'name' => 'Sudanese Pound',
+        'symbol' => 'ج.س',
+        'format' => '1,0.00 Sd',
         'exchange_rate' => 0.00,
     ],
     'SEK' => [
@@ -758,7 +764,13 @@ return [
         'format' => '$1,0.00',
         'exchange_rate' => 0.00,
     ],
-    'STD' => [
+    'SSP' => [
+        'name' => 'South Sudanese pound',
+        'symbol' => 'SS£',
+        'format' => 'SS £1,0.00',
+        'exchange_rate' => 0.00,
+    ],
+    'STN' => [
         'name' => 'Sao Tome and Principe, Dobra',
         'symbol' => 'Db',
         'format' => 'Db1,0.00',
@@ -866,10 +878,10 @@ return [
         'format' => '1 0,00 сўм',
         'exchange_rate' => 0.00,
     ],
-    'VEF' => [
-        'name' => 'Venezuela Bolivares Fuertes',
-        'symbol' => 'Bs. F.',
-        'format' => 'Bs. F. 1,0.00',
+    'VES' => [
+        'name' => 'Venezuela Bolivares soberano',
+        'symbol' => 'Bs. S.',
+        'format' => 'Bs. S. 1,0.00',
         'exchange_rate' => 0.00,
     ],
     'VND' => [
@@ -930,6 +942,12 @@ return [
         'name' => 'Zambia Kwacha',
         'symbol' => 'ZK',
         'format' => 'ZK1,0.00',
+        'exchange_rate' => 0.00,
+    ],
+    'ZWL' => [
+        'name' => 'Zimbabwean dollar',
+        'symbol' => '$',
+        'format' => '$1,0.00',
         'exchange_rate' => 0.00,
     ],
 ];
