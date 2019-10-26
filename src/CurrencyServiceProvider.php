@@ -3,6 +3,7 @@
 namespace Torann\Currency;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class CurrencyServiceProvider extends ServiceProvider
 {
@@ -79,6 +80,6 @@ class CurrencyServiceProvider extends ServiceProvider
      */
     protected function isLumen()
     {
-        return str_contains($this->app->version(), 'Lumen') === true;
+        return Str::contains($this->app->version(), 'Lumen') === true;
     }
 }

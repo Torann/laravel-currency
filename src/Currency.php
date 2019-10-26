@@ -134,18 +134,18 @@ class Currency
         // Match decimal and thousand separators
         preg_match_all('/[\s\',.!]/', $format, $separators);
 
-        if ($thousand = array_get($separators, '0.0', null)) {
+        if ($thousand = Arr::get($separators, '0.0', null)) {
             if ($thousand == '!') {
                 $thousand = '';
             }
         }
 
-        $decimal = array_get($separators, '0.1', null);
+        $decimal = Arr::get($separators, '0.1', null);
 
         // Match format for decimals count
         preg_match($valRegex, $format, $valFormat);
 
-        $valFormat = array_get($valFormat, 0, 0);
+        $valFormat = Arr::get($valFormat, 0, 0);
 
         // Count decimals length
         $decimals = $decimal ? strlen(substr(strrchr($valFormat, $decimal), 1)) : 0;
