@@ -28,7 +28,7 @@ class CreateCurrencyTable extends Migration
      */
     public function up()
     {
-        Schema::connection()->create($this->table_name, function ($table) {
+        Schema::connection($this->table_connection)->create($this->table_name, function ($table) {
             $table->increments('id')->unsigned();
             $table->string('name');
             $table->string('code', 10)->index();
