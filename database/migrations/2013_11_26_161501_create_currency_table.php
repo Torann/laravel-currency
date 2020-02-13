@@ -10,12 +10,14 @@ class CreateCurrencyTable extends Migration
      * @var string
      */
     protected $table_name;
+    protected $table_connection;
 
     /**
      * Create a new migration instance.
      */
     public function __construct()
     {
+        $this->table_connection = config('currency.drivers.database.connection');
         $this->table_name = config('currency.drivers.database.table');
     }
 
@@ -26,7 +28,7 @@ class CreateCurrencyTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->table_name, function ($table) {
+        Schema::connection()->create($this->table_name, function ($table) {
             $table->increments('id')->unsigned();
             $table->string('name');
             $table->string('code', 10)->index();

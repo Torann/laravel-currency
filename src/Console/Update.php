@@ -15,7 +15,8 @@ class Update extends Command
      */
     protected $signature = 'currency:update
                                 {--o|openexchangerates : Get rates from OpenExchangeRates.org}
-                                {--g|google : Get rates from Google Finance}';
+                                {--g|google : Get rates from Google Finance}
+                                {--f|fixer : Get rates from fixer.io}';
 
     /**
      * The console command description.
@@ -67,7 +68,7 @@ class Update extends Command
         }
 
         if ($this->input->getOption('openexchangerates')) {
-            if (!$api = $this->currency->config('api_key')) {
+            if (!$api = $this->currency->config('api_key.openexchangerates')) {
                 $this->error('An API key is needed from OpenExchangeRates.org to continue.');
 
                 return;
@@ -75,6 +76,17 @@ class Update extends Command
 
             // Get rates from OpenExchangeRates
             return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+        }
+
+        if ($this->input->getOption('fixer')) {
+            if (!$api = $this->currency->config('api_key.fixer')) {
+                $this->error('An API key is needed from fixer.io to continue.');
+
+                return;
+            }
+
+            // Get rates
+            $this->updateFromFixerIO($defaultCurrency, $api);
         }
     }
 
@@ -133,16 +145,45 @@ class Update extends Command
             if (Str::contains($response, 'bld>')) {
                 $data = explode('bld>', $response);
                 $rate = explode($code, $data[1])[0];
-                
+
                 $this->currency->getDriver()->update($code, [
                     'exchange_rate' => $rate,
                 ]);
-            }
-            else {
+            } else {
                 $this->warn('Can\'t update rate for ' . $code);
                 continue;
             }
         }
+    }
+
+    private function updateFromFixerIO($defaultCurrency, $api)
+    {
+        $this->info('Updating currency exchange rates from fixer.io...');
+
+        // Make request
+        $content = json_decode($this->request("http://data.fixer.io/api/latest?access_key={$api}&format=1&base={$defaultCurrency}"));
+
+        // Error getting content?
+        if (isset($content->error)) {
+            $this->error($content->error->code . ' ' . $content->error->type);
+
+            return;
+        }
+
+        // Parse timestamp for DB
+        $timestamp = (new DateTime())->setTimestamp($content->timestamp);
+
+        // Update each rate
+        foreach ($content->rates as $code => $value) {
+            $this->currency->getDriver()->update($code, [
+                'exchange_rate' => $value,
+                'updated_at' => $timestamp,
+            ]);
+        }
+
+        $this->currency->clearCache();
+
+        $this->info('Update!');
     }
 
     /**
