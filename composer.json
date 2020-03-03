@@ -1,6 +1,6 @@
 {
     "name": "torann/currency",
-    "description": "This provides Laravel 5 with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
+    "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
     "keywords": ["laravel", "currency", "money", "exchange rate", "OpenExchangeRates", "finance"],
 	"license": "BSD-2-Clause",
     "authors": [
@@ -11,8 +11,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "illuminate/support": "~5.1|~6",
-        "illuminate/cache": "~5.1|~6"
+        "illuminate/support": "~5.1|^6.0|^7.0",
+        "illuminate/cache": "~5.1|^6.0|^7.0"
     },
     "suggest": {
         "illuminate/database": "Allows for storing of currencies in the database"
