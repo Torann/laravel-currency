@@ -1,5 +1,3 @@
-> **NOTE** Yahoo has discontinued their exchange rate service. So everyone will have to move to OpenExchangeRates.org
-
 # Currency for Laravel
 
 [![Latest Stable Version](https://poser.pugx.org/torann/currency/v/stable.png)](https://packagist.org/packages/torann/currency)
@@ -17,10 +15,6 @@ This provides Laravel with currency functions such as currency formatting and co
 ## Official Documentation
 
 Documentation for the package can be found on [Lyften.com](http://lyften.com/projects/laravel-currency/).
-
-## Laravel 4
-
-For Laravel 4 Installation see [version 0.1](https://github.com/Torann/laravel-currency/tree/0.1);
 
 ## Change Log
 
