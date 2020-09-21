@@ -17,15 +17,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | API Key for OpenExchangeRates.org
+    | API Keys for different services
     |--------------------------------------------------------------------------
-    |
-    | Only required if you with to use the Open Exchange Rates api. You can
-    | always just use Yahoo, the current default.
     |
     */
 
-    'api_key' => '',
+    'api_key' => [
+        'openexchangerates' => '', // OpenExchangeRates.org
+        'fixer' => '', // fixer.io
+    ],
 
     /*
     |--------------------------------------------------------------------------
