@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('currency')) {
+if (! function_exists('currency')) {
     /**
      * Convert given number.
      *
@@ -21,7 +21,7 @@ if (!function_exists('currency')) {
     }
 }
 
-if (!function_exists('currency_format')) {
+if (! function_exists('currency_format')) {
     /**
      * Format given number.
      *

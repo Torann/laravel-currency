@@ -91,8 +91,7 @@ class Manage extends Command
 
         if (is_string($result = $this->storage->create($data))) {
             $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
-        }
-        else {
+        } else {
             $this->output->writeln("<info>success</info>");
         }
     }
@@ -114,8 +113,7 @@ class Manage extends Command
 
         if (is_string($result = $this->storage->update($currency, $data))) {
             $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
-        }
-        else {
+        } else {
             $this->output->writeln("<info>success</info>");
         }
     }
@@ -133,8 +131,7 @@ class Manage extends Command
 
         if (is_string($result = $this->storage->delete($currency))) {
             $this->output->writeln('<error>' . ($result ?: 'Failed') . '</error>');
-        }
-        else {
+        } else {
             $this->output->writeln("<info>success</info>");
         }
     }
@@ -160,7 +157,7 @@ class Manage extends Command
     /**
      * Get action argument.
      *
-     * @param  array $validActions
+     * @param array $validActions
      *
      * @return array
      */
