@@ -1,0 +1,10 @@
+parameters:
+    excludes_analyse:
+        - vendor
+        - resources
+    ignoreErrors:
+        - '#Function app not found#'
+        - '#Function config_path not found#'
+        - '#Function base_path not found#'
+        - '#Function config not found#'
+        - '#Parameter \$request of method#'

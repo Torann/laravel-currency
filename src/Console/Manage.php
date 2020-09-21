@@ -82,7 +82,8 @@ class Manage extends Command
     protected function add($currency)
     {
         if (($data = $this->getCurrency($currency)) === null) {
-            return $this->error("Currency \"{$currency}\" not found");
+            $this->error("Currency \"{$currency}\" not found");
+            return;
         }
 
         $this->output->write("Adding {$currency} currency...");
@@ -106,7 +107,8 @@ class Manage extends Command
     protected function update($currency)
     {
         if (($data = $this->getCurrency($currency)) === null) {
-            return $this->error("Currency \"{$currency}\" not found");
+            $this->error("Currency \"{$currency}\" not found");
+            return;
         }
 
         $this->output->write("Updating {$currency} currency...");
