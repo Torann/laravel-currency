@@ -14,6 +14,7 @@ class Update extends Command
      * @var string
      */
     protected $signature = 'currency:update
+                                {--e|exchangeratesapi : Get rates from ExchangeRatesApi.io}
                                 {--o|openexchangerates : Get rates from OpenExchangeRates.org}
                                 {--g|google : Get rates from Google Finance}';
 
@@ -45,6 +46,7 @@ class Update extends Command
      * Execute the console command for Laravel 5.4 and below
      *
      * @return void
+     * @throws \Exception
      */
     public function fire()
     {
@@ -55,11 +57,17 @@ class Update extends Command
      * Execute the console command.
      *
      * @return void
+     * @throws \Exception
      */
     public function handle()
     {
         // Get Settings
         $defaultCurrency = $this->currency->config('default');
+
+        if ($this->input->getOption('exchangeratesapi')) {
+            // Get rates from exchangeratesapi
+            return $this->updateFromExchangeRatesApi($defaultCurrency);
+        }
 
         if ($this->input->getOption('google')) {
             // Get rates from google
@@ -82,7 +90,39 @@ class Update extends Command
      * Fetch rates from the API
      *
      * @param $defaultCurrency
+     */
+    private function updateFromExchangeRatesApi($defaultCurrency)
+    {
+        $this->info('Updating currency exchange rates from ExchangeRatesApi.io...');
+
+        // Make request
+        $content = json_decode($this->request("https://api.exchangeratesapi.io/latest?base={$defaultCurrency}"));
+
+        // Error getting content?
+        if (isset($content->error)) {
+            $this->error($content->description);
+
+            return;
+        }
+
+        // Update each rate
+        foreach ($content->rates as $code => $value) {
+            $this->currency->getDriver()->update($code, [
+                'exchange_rate' => $value,
+            ]);
+        }
+
+        $this->currency->clearCache();
+
+        $this->info('Update!');
+    }
+
+    /**
+     * Fetch rates from the API
+     *
+     * @param $defaultCurrency
      * @param $api
+     * @throws \Exception
      */
     private function updateFromOpenExchangeRates($defaultCurrency, $api)
     {
