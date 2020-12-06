@@ -114,7 +114,7 @@ class Update extends Command
 
         $this->currency->clearCache();
 
-        $this->info('Update!');
+        $this->info('Updated !');
     }
 
     /**
