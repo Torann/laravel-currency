@@ -9,6 +9,8 @@
 
 This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.
 
+> ⚠️ Fork of torann/currency for PHP8+
+
 - [Currency on Packagist](https://packagist.org/packages/torann/currency)
 - [Currency on GitHub](https://github.com/torann/laravel-currency)
 

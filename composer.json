@@ -1,6 +1,6 @@
 {
-    "name": "torann/currency",
-    "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
+    "name": "repat/laravel-currency",
+    "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates. Fork of torann/currency.",
     "keywords": [
         "laravel",
         "currency",
@@ -8,13 +8,18 @@
         "exchange rate",
         "OpenExchangeRates",
         "Exchange Rates API",
-        "finance"
+        "finance",
+        "torann"
     ],
     "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Daniel Stainback",
             "email": "torann@gmail.com"
+        },
+        {
+            "name": "repat",
+            "email": "repat@repat.de"
         }
     ],
     "require": {
