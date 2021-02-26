@@ -412,8 +412,8 @@ return [
     ],
     'KES' => [
         'name' => 'Kenyan Shilling',
-        'symbol' => 'S',
-        'format' => 'S1,0.00',
+        'symbol' => 'KES',
+        'format' => 'KSh1,0.00',
         'exchange_rate' => 0.00,
     ],
     'KGS' => [
