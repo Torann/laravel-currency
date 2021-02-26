@@ -22,8 +22,8 @@ return [
     ],
     'AMD' => [
         'name' => 'Armenian Dram',
-        'symbol' => '&#1423;',
-        'format' => '1,0.00 &#1423;',
+        'symbol' => '֏',
+        'format' => '1,0.00 ֏',
         'exchange_rate' => 0.00,
     ],
     'ANG' => [
