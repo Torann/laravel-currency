@@ -240,8 +240,7 @@ class Currency
         if ($this->currencies_cache === null) {
             if (config('app.debug', false) === true) {
                 $this->currencies_cache = $this->getDriver()->all();
-            }
-            else {
+            } else {
                 $this->currencies_cache = $this->cache->rememberForever('torann.currency', function () {
                     return $this->getDriver()->all();
                 });
@@ -258,7 +257,7 @@ class Currency
      */
     public function getActiveCurrencies()
     {
-        return array_filter($this->getCurrencies(), function($currency) {
+        return array_filter($this->getCurrencies(), function ($currency) {
             return $currency['active'] == true;
         });
     }
@@ -360,8 +359,8 @@ class Currency
     /**
      * Dynamically call the default driver instance.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
      *
      * @return mixed
      */

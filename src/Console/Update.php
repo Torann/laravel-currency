@@ -3,8 +3,8 @@
 namespace Torann\Currency\Console;
 
 use DateTime;
-use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Illuminate\Console\Command;
 
 class Update extends Command
 {
@@ -81,7 +81,7 @@ class Update extends Command
         }
 
         if ($this->input->getOption('openexchangerates')) {
-            if (!$api = $this->currency->config('api_key')) {
+            if (! $api = $this->currency->config('api_key')) {
                 $this->error('An API key is needed from OpenExchangeRates.org to continue.');
 
                 return;
@@ -121,7 +121,7 @@ class Update extends Command
 
         $this->currency->clearCache();
 
-        $this->info('Update!');
+        $this->info('Updated !');
     }
 
     /**
@@ -129,6 +129,7 @@ class Update extends Command
      *
      * @param $defaultCurrency
      * @param $api
+     *
      * @throws \Exception
      */
     private function updateFromOpenExchangeRates($defaultCurrency, $api)
@@ -136,7 +137,9 @@ class Update extends Command
         $this->info('Updating currency exchange rates from OpenExchangeRates.org...');
 
         // Make request
-        $content = json_decode($this->request("http://openexchangerates.org/api/latest.json?base={$defaultCurrency}&app_id={$api}&show_alternative=1"));
+        $content = json_decode(
+            $this->request("http://openexchangerates.org/api/latest.json?base={$defaultCurrency}&app_id={$api}&show_alternative=1")
+        );
 
         // Error getting content?
         if (isset($content->error)) {
@@ -169,6 +172,7 @@ class Update extends Command
     private function updateFromGoogle($defaultCurrency)
     {
         $this->info('Updating currency exchange rates from finance.google.com...');
+
         foreach ($this->currency->getDriver()->all() as $code => $value) {
             // Don't update the default currency, the value is always 1
             if ($code === $defaultCurrency) {
@@ -180,12 +184,11 @@ class Update extends Command
             if (Str::contains($response, 'bld>')) {
                 $data = explode('bld>', $response);
                 $rate = explode($code, $data[1])[0];
-                
+
                 $this->currency->getDriver()->update($code, [
                     'exchange_rate' => $rate,
                 ]);
-            }
-            else {
+            } else {
                 $this->warn('Can\'t update rate for ' . $code);
                 continue;
             }

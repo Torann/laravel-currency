@@ -1,8 +1,16 @@
 {
     "name": "torann/currency",
     "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
-    "keywords": ["laravel", "currency", "money", "exchange rate", "OpenExchangeRates", "finance"],
-	"license": "BSD-2-Clause",
+    "keywords": [
+        "laravel",
+        "currency",
+        "money",
+        "exchange rate",
+        "OpenExchangeRates",
+        "Exchange Rates API",
+        "finance"
+    ],
+    "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "Daniel Stainback",
@@ -10,12 +18,19 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
-        "illuminate/support": "~5.1|^6.0|^7.0",
-        "illuminate/cache": "~5.1|^6.0|^7.0"
+        "php": "^7.2|^8.0",
+        "illuminate/support": "^6.0|^7.0|^8.0",
+        "illuminate/console": "^6.0|^7.0|^8.0",
+        "illuminate/cache": "^6.0|^7.0|^8.0"
     },
     "suggest": {
         "illuminate/database": "Allows for storing of currencies in the database"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0",
+        "mockery/mockery": "^1.3",
+        "phpstan/phpstan": "^0.12.14",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "autoload": {
         "files": [
@@ -33,6 +48,6 @@
             "aliases": {
                 "Currency": "Torann\\Currency\\Facades\\Currency"
             }
-	}
+        }
     }
 }

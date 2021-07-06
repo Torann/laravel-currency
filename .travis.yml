@@ -1,17 +1,15 @@
 language: php
 
 php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
-
-matrix:
-  allow_failures:
-    - php: 7.0
+  - 7.2
+  - 7.3
+  - 7.4
+  - 8.0
 
 before_script:
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev
 
-script: phpunit
+script:
+  - ./vendor/bin/phpcs --standard=phpcs.xml src
+  - ./vendor/bin/phpstan --level=0 --no-progress analyse src
