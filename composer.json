@@ -1,5 +1,5 @@
 {
-    "name": "torann/currency",
+    "name": "brainiac/currency",
     "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
     "keywords": ["laravel", "currency", "money", "exchange rate", "OpenExchangeRates", "finance"],
 	"license": "BSD-2-Clause",
@@ -7,7 +7,11 @@
         {
             "name": "Daniel Stainback",
             "email": "torann@gmail.com"
-        }
+        },
+	    {
+		    "name": "Brainaic Hades",
+		    "email": "brainiachades"
+	    }
     ],
     "require": {
         "php": ">=5.5.9",
