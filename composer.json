@@ -14,7 +14,7 @@
 	    }
     ],
     "require": {
-        "php": ">=5.5.9",
+        "php": ">5.5.9",
         "illuminate/support": "~5.1|^6.0|^7.0",
         "illuminate/cache": "~5.1|^6.0|^7.0"
     },
