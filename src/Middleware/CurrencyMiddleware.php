@@ -93,7 +93,7 @@ class CurrencyMiddleware
         currency()->setUserCurrency($currency);
 
         // Save it for later too!
-        $request->getSession()->put(['currency' => $currency]);
+        $request->session()->put(['currency' => $currency]);
 
         return $currency;
     }
