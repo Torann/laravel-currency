@@ -49,7 +49,7 @@ class CurrencyMiddleware
         }
 
         // Get currency from session
-        $currency = $request->getSession()->get('currency');
+        $currency = $request->session()->get('currency');
         if ($currency && currency()->isActive($currency) === true) {
             return $currency;
         }
