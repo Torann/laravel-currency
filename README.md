@@ -12,6 +12,8 @@ This provides Laravel with currency functions such as currency formatting and co
 - [Currency on Packagist](https://packagist.org/packages/torann/currency)
 - [Currency on GitHub](https://github.com/torann/laravel-currency)
 
+This is a fork version of torann/currency to update it support for Laravel 9 and PHP 8.1
+
 ## Official Documentation
 
 Documentation for the package can be found on [Lyften.com](http://lyften.com/projects/laravel-currency/).
