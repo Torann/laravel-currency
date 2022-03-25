@@ -1,5 +1,5 @@
 {
-    "name": "torann/currency",
+    "name": "coliving/currency",
     "description": "This provides Laravel with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
     "keywords": [
         "laravel",
@@ -8,7 +8,8 @@
         "exchange rate",
         "OpenExchangeRates",
         "Exchange Rates API",
-        "finance"
+        "finance",
+        "coliving"
     ],
     "license": "BSD-2-Clause",
     "authors": [
