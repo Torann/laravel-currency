@@ -65,14 +65,13 @@ class Update extends Command
         $defaultCurrency = $this->currency->config('default');
 
         if ($this->input->getOption('exchangeratesapi')) {
-            if (!$api = $this->currency->config('api_key')) {
-                $this->error('An API key is needed from exchangeratesapi.io to continue.');
-
-                return;
+            if ($access_key = $this->currency->config('api_key')) {
+                return $this->updateFromExchangeRatesApi($defaultCurrency, $access_key);
             }
 
-            // Get rates from exchangeratesapi
-            return $this->updateFromExchangeRatesApi($defaultCurrency, $api);
+            $this->error('An API key is needed from exchangeratesapi.io to continue.');
+
+            return;
         }
 
         if ($this->input->getOption('google')) {
