@@ -116,7 +116,7 @@ class Update extends Command
         $this->info('Updating currency exchange rates from ExchangeRatesApi.io...');
 
         // Make request
-        $content = json_decode($this->request("https://api.exchangeratesapi.io/v1/latest?base={$defaultCurrency}&access_key={$api}"));
+        $content = json_decode($this->request("http://api.exchangeratesapi.io/v1/latest?base={$defaultCurrency}&access_key={$api}"));
 
         // Error getting content?
         if (isset($content->error)) {
