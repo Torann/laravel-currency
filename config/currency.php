@@ -20,12 +20,33 @@ return [
     | API Key for OpenExchangeRates.org
     |--------------------------------------------------------------------------
     |
-    | Only required if you with to use the Open Exchange Rates api. You can
-    | always just use Yahoo, the current default.
+    | Only required if you want to use the Open Exchange Rates api. 
     |
     */
 
-    'api_key' => '',
+    'openexchangerates_api_key' => env('OPENEXCHANGERATES_API_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Key for Exchangeratesapi.io
+    |--------------------------------------------------------------------------
+    |
+    | Only required if you want to use the Exchange Rates api. 
+    |
+    */
+
+    'exchangerates_api_key' => env('EXCHANGERATES_API_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Key for Fixer.io
+    |--------------------------------------------------------------------------
+    |
+    | Only required if you want to use the Fixer api. 
+    |
+    */
+
+    'fixer_api_key' => env('FIXER_API_KEY'),
 
     /*
     |--------------------------------------------------------------------------
