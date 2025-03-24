@@ -41,7 +41,7 @@ interface DriverInterface
      *
      * @return int
      */
-    public function update($code, array $attributes, DateTime $timestamp = null);
+    public function update($code, array $attributes, ?DateTime $timestamp = null);
 
     /**
      * Remove given currency from storage.
