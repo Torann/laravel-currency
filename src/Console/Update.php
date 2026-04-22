@@ -16,6 +16,7 @@ class Update extends Command
     protected $signature = 'currency:update
                                 {--e|exchangeratesapi : Get rates from ExchangeRatesApi.io}
                                 {--o|openexchangerates : Get rates from OpenExchangeRates.org}
+                                {--u|unirate : Get rates from UniRateAPI.com}
                                 {--g|google : Get rates from Google Finance}';
 
     /**
@@ -83,6 +84,17 @@ class Update extends Command
 
             // Get rates from OpenExchangeRates
             return $this->updateFromOpenExchangeRates($defaultCurrency, $api);
+        }
+
+        if ($this->input->getOption('unirate')) {
+            if (! $api = $this->currency->config('api_key')) {
+                $this->error('An API key is needed from UniRateAPI.com to continue.');
+
+                return;
+            }
+
+            // Get rates from UniRateAPI
+            return $this->updateFromUniRate($defaultCurrency, $api);
         }
     }
 
@@ -155,6 +167,40 @@ class Update extends Command
         $this->currency->clearCache();
 
         $this->info('Update!');
+    }
+
+    /**
+     * Fetch rates from the API
+     *
+     * @param $defaultCurrency
+     * @param $api
+     */
+    private function updateFromUniRate($defaultCurrency, $api)
+    {
+        $this->info('Updating currency exchange rates from UniRateAPI.com...');
+
+        // Make request
+        $content = json_decode(
+            $this->request("https://api.unirateapi.com/api/rates?from={$defaultCurrency}&api_key={$api}")
+        );
+
+        // Error getting content?
+        if (isset($content->error)) {
+            $this->error($content->error);
+
+            return;
+        }
+
+        // Update each rate
+        foreach ($content->rates as $code => $value) {
+            $this->currency->getDriver()->update($code, [
+                'exchange_rate' => (float) $value,
+            ]);
+        }
+
+        $this->currency->clearCache();
+
+        $this->info('Updated !');
     }
 
     /**
